@@ -1,0 +1,15 @@
+.otp-container {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.otp-box {
+  width: 40px;
+  height: 45px;
+  text-align: center;
+  border-radius: 8px;
+  border: 1px solid #cde3f7;
+  background: rgba(255,255,255,0.05);
+  color: white;
+}
