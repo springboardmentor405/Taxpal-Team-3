@@ -8,14 +8,14 @@ body {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    min-height: 100vh;
-    min-width: 100vh;
+    min-height: auto;
+    min-width: auto;
 
     .auth-layout {
         display: flex;
         height: auto;
         width: auto;
-        margin: 2% 15%;
+        margin:4% 15%;
         background-color: $bg-color;
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(10px); // Safari support

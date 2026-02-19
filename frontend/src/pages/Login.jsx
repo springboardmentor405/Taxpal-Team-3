@@ -8,38 +8,86 @@ import PasswordField from '../components/Auth/PasswordField';
 import PrimaryButton from '../components/Auth/PrimaryButton';
 import AuthLink from '../components/Auth/AuthLink';
 
+// function Login() {
+//   return (
+//     <AuthLayout>
+
+//       <AuthCard>
+//         <AuthHeader
+//           title={"Login"}
+//           subtitle={'Sign in to your account to continue'}
+//         />
+//         <InputField
+//           placeholder={'Enter your Username'}
+//         />
+//         <PasswordField
+//           placeholder={'Enter your Password'}
+//         />
+//         <PrimaryButton
+//           text={'Sign in'}
+//         />
+//         <AuthLink
+//           text={"Don't have an account ?"} linkText={'Sign up'}
+//         />
+//       </AuthCard>
+//     </AuthLayout>
+//   );
+// }
+
+// export default Login;
+
+
+import { useState } from "react";
+import axios from "axios";
+
 function Login() {
+
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleLogin = async () => {
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/api/auth/login",
+        { username, password }
+      );
+
+      console.log(res.data);
+      alert("Login Success ✅");
+
+    } catch (error) {
+      alert(error.response.data.message);
+    }
+  };
+
   return (
     <AuthLayout>
-      {/* <div className="login-box">
-        <h2>Login</h2>
-        <form>
-          <div className="input-group">
-            <label>Email</label>
-            <input type="email" placeholder="Enter your email" />
-          </div>
-          <div className="input-group">
-            <label>Password</label>
-            <input type="password" placeholder="Enter your password" />
-          </div>
-          <button type="submit" className="login-btn">
-            Login
-          </button>
-        </form>
-      </div> */}
       <AuthCard>
-        <AuthHeader title={"Login"} subtitle={'Sign in to your account to continue'}/>
-        <InputField  placeholder={'Enter your Username'} />
-        <PasswordField placeholder={'Enter your Password'} />
-        <PrimaryButton text={'Sign in'} />
-        <AuthLink text={"Don't have an account ?"} linkText={'Sign up'}/>
-    
-      
+        <AuthHeader
+          title="Login"
+          subtitle="Sign in to your account to continue"
+        />
+
+        <InputField
+          placeholder="Enter your Username"
+          onChange={(e) => setUsername(e.target.value)}
+        />
+
+        <PasswordField
+          placeholder="Enter your Password"
+          onChange={(e) => setPassword(e.target.value)}
+        />
+
+        <PrimaryButton
+          text="Sign in"
+          onClick={handleLogin}
+        />
+
+        <AuthLink
+          text="Don't have an account?"
+          linkText="Sign up"
+        />
       </AuthCard>
-  
-      
     </AuthLayout>
   );
 }
-
-export default Login;
