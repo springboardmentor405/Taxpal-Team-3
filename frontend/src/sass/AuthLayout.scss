@@ -1,0 +1,57 @@
+$bg-color: rgba(175, 175, 175, 0.178);
+
+
+body {
+    padding: 0;
+    margin: 0;
+    background-image: url("../assets/images/background_image.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    min-width: 100vh;
+
+    .auth-layout {
+        display: flex;
+        height: auto;
+        width: auto;
+        margin: 2% 8%;
+        background-color: $bg-color;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(10px); // Safari support
+        border-radius: 4px;
+        border: 1px solid rgba(255, 255, 255, 0.068);
+        box-shadow: 0 4px 30px rgba(104, 185, 218, 0.1);
+        transition: all 0.3s ease;
+
+        &:hover {
+            background: rgba(233, 233, 233, 0.219);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+        .auth-left{
+            padding: 2%;
+        }
+        .auth-left,
+        .auth-right {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .auth-right {
+            // background: rgba(255, 255, 255, 0.08);
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .auth-layout {
+                flex-direction: column;
+            }
+
+            .auth-left {
+                display: flex;
+            }
+        }
+    }
+}
