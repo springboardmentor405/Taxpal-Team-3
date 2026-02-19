@@ -1,12 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Calistoga&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Salsa&display=swap');
+
 .auth-title {
-  font-size: 26px;
+  font-size: 45px;
   font-weight: 600;
   color: white;
   margin-bottom: 6px;
+  font-family: 'Calistoga', cursive;
+  font-weight: 400;
 }
 
 .auth-subtitle {
-  font-size: 14px;
   font-weight: 300;
   color: rgba(255, 255, 255, 0.85);
+  font-family: 'Salsa', cursive;
+  font-weight: 400;
+  font-size: 22px;
 }

@@ -1,10 +1,15 @@
+@import url('https://fonts.googleapis.com/css2?family=Calistoga&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Salsa&display=swap');
+
 .auth-link {
   color: #d6e6f2;
-  font-size: 14px;
-  margin-top: 18px;
+  font-size: 18px;
+  margin-top: 25  px;
 }
 
 .auth-link span {
   color: #7ec8ff;
   cursor: pointer;
+  font-size: 18px;
+
 }
