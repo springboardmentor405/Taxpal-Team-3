@@ -2,9 +2,11 @@
   color: #d6e6f2;
   font-size: 14px;
   margin-top: 18px;
+  font-family: 'Salsa', serif;
 }
 
 .auth-link span {
   color: #7ec8ff;
   cursor: pointer;
+  font-family: 'Salsa', serif;
 }

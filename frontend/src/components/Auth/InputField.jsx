@@ -1,22 +1,27 @@
+import React from "react";
 import "./InputField.css";
+import { User, Mail, Lock, Eye } from "lucide-react";
 
 export default function InputField({
-  label,
   placeholder,
   type = "text",
-  value,
-  onChange,
+  leftIcon,
+  rightIcon
 }) {
   return (
-    <div className="input-group">
-      {label && <label className="input-label">{label}</label>}
+    <div className="input-wrapper">
+      <div className="left-section">
+        <span className="icon">{leftIcon}</span>
+        <span className="divider"></span>
+      </div>
+
       <input
         type={type}
         placeholder={placeholder}
-        value={value}
-        onChange={onChange}
-        className="input-field"
+        className="input-text"
       />
+
+      {rightIcon && <span className="right-icon">{rightIcon}</span>}
     </div>
   );
 }

@@ -6,6 +6,8 @@ import PasswordField from "../components/Auth/PasswordField";
 import OTPInput from "../components/Auth/OTPInput";
 import PrimaryButton from "../components/Auth/PrimaryButton";
 import AuthLink from "../components/Auth/AuthLink";
+import { User, Mail, Lock, Eye } from "lucide-react";
+
 
 export default function ComponentPreview() {
   const [form, setForm] = useState({});
@@ -14,35 +16,42 @@ export default function ComponentPreview() {
     setForm({ ...form, [field]: e.target.value });
 
   return (
-    <div style={{ padding: "40px" }}>
+    <div style={{  width: "420px",padding: "40px" }}>
       <AuthCard>
         <AuthHeader
           title="Component Preview"
           subtitle="Updated Inputs with Labels"
         />
+        
 
         <InputField
+          placeholder="Username" leftIcon={<User size={20} />}
           label="Username"
-          placeholder="Enter your username"
           onChange={handleChange("username")}
         />
 
         <InputField
           label="Email"
           type="email"
-          placeholder="Enter your email"
+          placeholder="Email" leftIcon={<Mail size={20} />}
           onChange={handleChange("email")}
         />
 
         <PasswordField
           label="Password"
-          placeholder="Enter your password"
+          placeholder="Password"
+          type="password"
+          leftIcon={<Lock size={20} />}
+          rightIcon={<Eye size={20} />}
           onChange={handleChange("password")}
         />
 
         <PasswordField
           label="Confirm Password"
-          placeholder="Confirm your password"
+          placeholder="Confirm Password"
+          type="password"
+          leftIcon={<Lock size={20} />}
+          rightIcon={<Eye size={20} />}
           onChange={handleChange("confirmPassword")}
         />
 

@@ -1,21 +1,32 @@
+import React, { useState } from "react";
 import "./PasswordField.css";
 
 export default function PasswordField({
-  label,
   placeholder,
-  value,
   onChange,
+  leftIcon,
+  rightIcon
 }) {
+  const [showPassword, setShowPassword] = useState(false);
+
   return (
-    <div className="input-group">
-      {label && <label className="input-label">{label}</label>}
+    <div className="password-wrapper">
+      <div className="left-section">
+        <span className="icon">{leftIcon}</span>
+        <span className="divider"></span>
+      </div>
       <input
-        type="password"
+        type={showPassword ? "text" : "password"}
         placeholder={placeholder}
-        value={value}
+        className="password-input"
         onChange={onChange}
-        className="input-field"
       />
+      <span
+        className="right-icon"
+        onClick={() => setShowPassword(!showPassword)}
+      >
+        {rightIcon}
+      </span>
     </div>
   );
 }
