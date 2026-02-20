@@ -1,0 +1,48 @@
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  margin-bottom: 18px;
+}
+
+.left-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.icon {
+  color: rgba(255, 255, 255, 0.9);
+  display: flex;
+}
+
+.divider {
+  width: 1px;
+  height: 22px;
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.input-text {
+  flex: 1;
+  margin-left: 12px;
+  border: none;
+  background: transparent;  
+  color: white;
+  font-family: 'Sahitya', serif;
+  font-size: 18px;
+  outline: none;
+}
+
+.input-text::placeholder {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.right-icon {
+  color: rgba(255, 255, 255, 0.8);
+  display: flex;
+}
