@@ -1,9 +1,11 @@
 .auth-title {
-  font-size: 48px;
+  font-size: 45px;
   font-weight: 600;
   color: white;
   margin-bottom: 8px;
   font-family: 'Calsitoga', serif;
+  margin-bottom: 5px;
+  line-height: 1.1;
 }
 
 .auth-subtitle {
@@ -11,5 +13,7 @@
   font-weight: 300;
   color: white;
   font-family: 'Salsa', serif;
-  margin-bottom: 8px;
+  margin-bottom: 25px;
+  margin-top: 0;
+  padding-bottom: 10px;
 }

@@ -1,22 +1,21 @@
-$bg-color: rgba(172, 172, 172, 0.205);
+$bg-color: rgba(255, 255, 255, 0);
 
-// _fonts.scss or main.scss
+
 
 @font-face {
   font-family: 'Eras Bold ITC';
-  src: url('../fonts/Eras-Bold-ITC.woff2') format('woff2'),
-       url('../fonts/Eras-Bold-ITC.ttf') format('truetype');
-  font-weight: bold; // Specifies this is the bold version
+  src: url('fonts/ErasBoldITC.woff2') format('woff2'),
+       url('fonts/ErasBoldITC.ttf') format('truetype');
+  font-weight: bold;
   font-style: normal;
 }
-
 
 @font-face {
     font-family: 'Salsa';
     src: url('../fonts/salsa-v1.woff2') format('woff2');
     font-weight: 400;
     font-style: normal;
-    font-display: swap; // Optimizes loading [1]
+    font-display: swap; 
 }
 
 @import url('https://fonts.googleapis.com');
@@ -25,42 +24,53 @@ $bg-color: rgba(172, 172, 172, 0.205);
     height: auto;
     width: auto;
     padding: 2% 10%;
-    background-color: $bg-color;
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px); 
-    border-radius: 4px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 4px 30px rgba(78, 78, 78, 0.1);
+    background-color: rgba(255, 255, 255, 0);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 1px;
+    border: 1px solid rgba(255, 255, 255, 0);
+    box-shadow: 0 4px 30px rgba(255, 255, 255, 0);
     transition: all 0.3s ease;
-
-    &:hover {
-        background: rgba(221, 221, 221, 0.281);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-    }
-
+    display: flex;
+    flex-direction: column;
+    justify-content: center; 
+    align-items: center;     
+    text-align: center;  
+    margin-left: 10px;
+    margin-top: 10px; 
+    
     img {
         height: 200px;
         width: 200px;
-        margin-left: 25%;
     }
 
     h2 {
         color: rgba(255, 255, 255, 0.85);
-          font-family: 'Eras Bold ITC', sans-serif;
-  font-weight: bold;
-        font-size: 50px;
+        font-family: "Eras Bold ITC", "Eras Demi ITC", "Eras Medium ITC", sans-serif;
+        font-weight: bold;
+        font-size: 45px;
+        margin-right: 100px;
+        margin-bottom: 0;
+        text-align:justify;
+        line-height: 1.1;
+        
     }
 
     p {
         font-family: 'Salsa', cursive;
         color: rgba(234, 234, 234, 0.8);
-        font-size: 30px;
-        font-weight: 600;
+        font-size: 25px;
+        font-weight: 400;
+        margin-top: 20px;
+        text-align: justify;
+        
 
         &:last-child {
             color: rgba(234, 234, 234, 1);
             font-family: 'Inter', sans-serif;
             font-weight: 400;
+            font-size: 20px;
+            letter-spacing: 2px;
         }
     }
 

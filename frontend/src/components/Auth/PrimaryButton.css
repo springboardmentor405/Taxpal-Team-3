@@ -1,17 +1,16 @@
 .primary-btn {
   width: 100%;
-  padding: 14px;
-  border-radius: 12px;
+  max-width: 250px;
+  padding: 9px 14px;
+  border-radius: 10px;
   border: none;
-  background: #082544;
+  background: #011d3a;
   color: white;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
-  margin-top: 10px;
+  margin-top: 8px;
+  margin-left: 100px;
   cursor: pointer;
-  transition: 0.2s;
-}
-
-.primary-btn:hover {
-  background: #061a32;
+  transition: 0.2s ease;
+  display: block;
 }
