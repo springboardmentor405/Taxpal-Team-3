@@ -1,0 +1,14 @@
+.auth-link {
+  color: white;
+  font-size: 22px;
+  margin-top: 50px;
+  font-family: 'Salsa', serif;
+  font-weight: 700;
+  text-align: center;
+}
+
+.auth-link span {
+  color: #38bdf8;
+  cursor: pointer;
+  font-weight: 700;
+}
