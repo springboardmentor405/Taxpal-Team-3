@@ -4,7 +4,7 @@
 .input-group {
   margin-bottom: 16px;
   display: flex;
-  flex-direction: column;
+  flex-direction: column; 
 }
 
 .input-label {
@@ -14,8 +14,26 @@
   font-weight: 500;
 }
 
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.left-icon {
+  position: absolute;
+  left: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.9);
+  pointer-events: none;
+  z-index: 10;
+  font-size: 20px;
+}
+
 .input-field {
-  padding: 12px;
+  padding: 12px 12px 12px 70px;
   border-radius: 10px;
   border: 1px solid rgba(255,255,255,0.4);
   background: rgba(255,255,255,0.08);
@@ -26,18 +44,29 @@
   font-family: 'Sahitya', serif;
   font-weight: 400;
   line-height: 1.6;
-  
+  width: 100%;
 }
-.input-field::placeholder{
+
+.input-field::placeholder {
   color: #ffffffdf;
+  padding-left: 30px;
   font-size: 18px;
-
 }
-
 
 .input-field:focus {
   border: 1px solid rgba(255,255,255,0.6);
   background: rgba(255,255,255,0.12);
   font-family: 'Sahitya', serif;
   font-size: 18px;
+}
+
+.right-icon {
+  position: absolute;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  z-index: 1;
 }

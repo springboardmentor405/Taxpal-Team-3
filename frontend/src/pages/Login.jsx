@@ -1,93 +1,85 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import axios from "axios";
 import AuthCard from '../components/Auth/AuthCard';
 import AuthHeader from '../components/Auth/AuthHeader';
 import InputField from '../components/Auth/InputField';
 import AuthLayout from '../layouts/AuthLayout';
-import '../sass/Login.scss';
-import logo from '../assets/images/logo.svg'
 import PasswordField from '../components/Auth/PasswordField';
 import PrimaryButton from '../components/Auth/PrimaryButton';
 import AuthLink from '../components/Auth/AuthLink';
-
-// function Login() {
-//   return (
-//     <AuthLayout>
-
-//       <AuthCard>
-//         <AuthHeader
-//           title={"Login"}
-//           subtitle={'Sign in to your account to continue'}
-//         />
-//         <InputField
-//           placeholder={'Enter your Username'}
-//         />
-//         <PasswordField
-//           placeholder={'Enter your Password'}
-//         />
-//         <PrimaryButton
-//           text={'Sign in'}
-//         />
-//         <AuthLink
-//           text={"Don't have an account ?"} linkText={'Sign up'}
-//         />
-//       </AuthCard>
-//     </AuthLayout>
-//   );
-// }
-
-// export default Login;
-
-
-import { useState } from "react";
-import axios from "axios";
+import { Mail, Lock } from 'lucide-react';
 
 function Login() {
+  const navigate = useNavigate();
 
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState({
+    email: "",
+    password: ""
+  });
 
-  const handleLogin = async () => {
-    try {
-      const res = await axios.post(
-        "http://localhost:5000/api/auth/login",
-        { username, password }
-      );
 
-      console.log(res.data);
-      alert("Login Success ✅");
+  const API_URL = "http://localhost:5000/api/auth";
 
-    } catch (error) {
-      alert(error.response.data.message);
-    }
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
   };
+
+const handleLogin = async (e) => {
+  e.preventDefault();
+  try {
+    const res = await axios.post(`${API_URL}/login`, formData);
+
+    // Save token in localStorage
+    localStorage.setItem("token", res.data.token);
+
+    toast.success(res.data.message || 'Logged in');
+
+    // Redirect to dashboard
+    navigate("/dashboard");
+  } catch (err) {
+    toast.error(err.response?.data?.message || "Login failed");
+  }
+};
 
   return (
     <AuthLayout>
       <AuthCard>
         <AuthHeader
           title="Login"
-          subtitle="Sign in to your account to continue"
+          subtitle="Sign in with your Email"
         />
-
-        <InputField
-          placeholder="Enter your Username"
-          onChange={(e) => setUsername(e.target.value)}
-        />
-
-        <PasswordField
-          placeholder="Enter your Password"
-          onChange={(e) => setPassword(e.target.value)}
-        />
-
-        <PrimaryButton
-          text="Sign in"
-          onClick={handleLogin}
-        />
+        <form onSubmit={handleLogin}>
+          <InputField
+            placeholder="Enter your Email"
+            leftIcon={<Mail size={20} />}
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+          />
+          <PasswordField
+            placeholder="Enter your Password"
+            leftIcon={<Lock size={20} />}
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+          />
+          <PrimaryButton text="Sign In" type="submit" />
+        </form>
 
         <AuthLink
           text="Don't have an account?"
           linkText="Sign up"
+          href="/signup"
         />
       </AuthCard>
     </AuthLayout>
   );
 }
+
+export default Login;

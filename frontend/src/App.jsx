@@ -1,23 +1,23 @@
-import AuthCard from "./components/Auth/AuthCard";
-import AuthHeader from "./components/Auth/AuthHeader";
-import AuthLink from "./components/Auth/AuthLink";
-import InputField from "./components/Auth/InputField";
-import LeftSide from "./components/Leftside";
-import ComponentPreview from "./pages/ComponentPreview";
+import { Routes, Route } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 import Login from "./pages/Login";
+import SignUp from "./pages/SignUp";
+import Dashboard from "./pages/Dashboard";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
-  return(
-
-    // <LeftSide/>
-    <Login/>
-    // <AuthCard/>
-    // <AuthHeader/>
-    // <AuthLink/>
-    // <InputField/>
-    
-  )
-  
+  return (
+    <>
+      <ToastContainer />
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+      </Routes>
+    </>
+  );
 }
 
 export default App;

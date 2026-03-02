@@ -3,13 +3,28 @@
 
 .auth-link {
   color: #d6e6f2;
-  font-size: 18px;
-  margin-top: 25  px;
+  font-size: 16px;
+  margin-top: 20px;
+  text-align: center;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  user-select: none;
 }
 
-.auth-link span {
+.auth-link:hover {
+  color: #a8c5e0;
+}
+
+.auth-link-text {
   color: #7ec8ff;
   cursor: pointer;
-  font-size: 18px;
+  font-size: 16px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border-bottom: 1px solid transparent;
+}
 
+.auth-link:hover .auth-link-text {
+  color: #4fa3ff;
+  border-bottom: 1px solid #4fa3ff;
 }

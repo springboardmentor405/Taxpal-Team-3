@@ -1,5 +1,9 @@
 import "./PrimaryButton.css";
 
-export default function PrimaryButton({ text }) {
-  return <button className="primary-btn">{text}</button>;
+export default function PrimaryButton({ text, onClick ,type="button"}) {
+  return (
+    <button type={type} className="primary-btn" onClick={onClick}>
+      {text}
+    </button>
+  );
 }

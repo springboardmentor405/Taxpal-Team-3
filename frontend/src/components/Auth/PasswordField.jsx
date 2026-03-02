@@ -1,25 +1,29 @@
 import "./PasswordField.css";
 
 export default function PasswordField({
-  icon,
   label,
   placeholder,
   value,
   onChange,
-  iconice,
+  name,
+  leftIcon,
+  rightIcon
 }) {
   return (
     <div className="input-group">
       {label && <label className="input-label">{label}</label>}
-      <input
-        // src={icon}
-        type="password"
-        placeholder={placeholder}
-        value={value}
-        onChange={onChange}
-        // src={iconice}
-        className="input-field"
-      />
+      <div className="input-wrapper">
+        {leftIcon && <span className="left-icon">{leftIcon}</span>}
+        <input
+          type="password"
+          name={name}
+          placeholder={placeholder}
+          value={value}
+          onChange={onChange}
+          className="input-field"
+        />
+        {rightIcon && <span className="right-icon">{rightIcon}</span>}
+      </div>
     </div>
   );
 }
