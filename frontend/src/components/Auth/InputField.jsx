@@ -1,12 +1,13 @@
 import React from "react";
 import "./InputField.css";
-import { User, Mail, Lock, Eye } from "lucide-react";
 
 export default function InputField({
   placeholder,
   type = "text",
   leftIcon,
-  rightIcon
+  rightIcon,
+  value,
+  onChange
 }) {
   return (
     <div className="input-wrapper">
@@ -19,6 +20,8 @@ export default function InputField({
         type={type}
         placeholder={placeholder}
         className="input-text"
+        value={value}
+        onChange={onChange}
       />
 
       {rightIcon && <span className="right-icon">{rightIcon}</span>}

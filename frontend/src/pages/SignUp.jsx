@@ -1,48 +1,69 @@
-import AuthCard from '../components/Auth/AuthCard';
-import AuthHeader from '../components/Auth/AuthHeader';
-import InputField from '../components/Auth/InputField';
-import AuthLayout from '../layouts/AuthLayout';
-import '../sass/SignUp.scss';
-import PasswordField from '../components/Auth/PasswordField';
-import PrimaryButton from '../components/Auth/PrimaryButton';
-import AuthLink from '../components/Auth/AuthLink';
-import { User, Mail, Lock, Eye } from "lucide-react";
 import { useState } from "react";
 import axios from "axios";
+
+import AuthCard from "../components/Auth/AuthCard";
+import AuthHeader from "../components/Auth/AuthHeader";
+import InputField from "../components/Auth/InputField";
+import PasswordField from "../components/Auth/PasswordField";
+import PrimaryButton from "../components/Auth/PrimaryButton";
+import AuthLink from "../components/Auth/AuthLink";
+import AuthLayout from "../layouts/AuthLayout";
+
+import { User, Mail, Lock, Eye } from "lucide-react";
+
 function SignUp() {
   const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
-  const [confirmPassword, setconfirmPassword] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const [loading, setLoading] = useState(false);
 
   const handleSignUp = async () => {
-    // 1. Basic Validation before sending to backend
+    
+    if (!username || !email || !password || !confirmPassword) {
+      return alert("All fields are required");
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return alert("Enter a valid email address");
+    }
+
+    if (password.length < 8) {
+      return alert("Password must be at least 8 characters");
+    }
+
     if (password !== confirmPassword) {
-      return alert("Passwords do not match! ❌");
+      return alert("Passwords do not match");
     }
 
     try {
-      // 2. Updated URL to match your backend route (/api/signup)
-      // We send 'username', 'email', and 'password' as defined in your User model
-      const res = await axios.post(
-        "http://localhost:5000/api/signup", 
-        { 
-          username: username, 
-          email: email, 
-          password: password 
-        }
-      );
+      setLoading(true);
 
-      console.log(res.data);
-      alert("SignUp Success ✅");
-      
-      // 3. Optional: Redirect to login page after success
-      // navigate("/login"); 
+      const apiBase =
+        import.meta.env.VITE_API_URL || "http://localhost:5000";
+
+      const response = await axios.post(`${apiBase}/api/auth/signup`, {
+        name: username,
+        email,
+        password,
+      });
+
+      alert("Signup successful");
+      console.log(response.data);
+
+      setUsername("");
+      setEmail("");
+      setPassword("");
+      setConfirmPassword("");
 
     } catch (error) {
-      // Improved error handling to show backend error messages
-      const errorMsg = error.response?.data?.error || "SignUp Failed ❌";
-      alert(errorMsg);
+      const message =
+        error.response?.data?.message || "Signup failed";
+      alert(message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -57,7 +78,7 @@ function SignUp() {
         <InputField
           placeholder="Enter your Username"
           leftIcon={<User size={20} />}
-          value={username} // Added value for controlled component
+          value={username}
           onChange={(e) => setUsername(e.target.value)}
         />
 
@@ -81,12 +102,13 @@ function SignUp() {
           leftIcon={<Lock size={20} />}
           rightIcon={<Eye size={20} />}
           value={confirmPassword}
-          onChange={(e) => setconfirmPassword(e.target.value)}
+          onChange={(e) => setConfirmPassword(e.target.value)}
         />
 
         <PrimaryButton
-          text="Sign Up"
-          onClick={handleSignUp} // Renamed to handleSignUp for clarity
+          text={loading ? "Signing up..." : "Sign Up"}
+          onClick={handleSignUp}
+          disabled={loading}
         />
 
         <AuthLink
