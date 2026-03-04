@@ -1,0 +1,73 @@
+
+.verify-box {
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  padding-top: 40px;    
+  text-align: center;
+}
+
+
+.verify-box .auth-title {
+  font-size: 42px;      
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.verify-box .auth-subtitle {
+  font-size: 20px;
+  margin-bottom: 45px;
+  opacity: 0.9;
+}
+
+
+.otp-container {
+  display: flex;
+  justify-content: center;
+  gap: 22px;        
+  margin-bottom: 40px;
+}
+
+.otp-input {
+  width: 58px;
+  height: 58px;
+  border-radius: 12px;
+  background-color: #0b2a4a;
+  border: 1.5px solid rgba(255,255,255,0.6);
+  font-size: 20px;
+  color: white;
+  text-align: center;
+}
+
+.otp-input:focus {
+  border-color: #7fd8ff;
+  outline: none;
+}
+
+.verify-box button {
+  width: 70%;
+  border-radius: 28px;
+  margin-bottom: 25px;
+}
+
+
+.verify-links {
+  display: flex;
+  justify-content: space-between;
+  width: 70%;
+  margin: 10px auto 35px auto; 
+  font-size: 16px;
+}
+
+.verify-links span {
+  color: #7fd8ff;
+  cursor: pointer;
+}
+
+.verify-links span:hover {
+  text-decoration: underline;
+}
+
+.verify-box .auth-link {
+  font-size: 20px;
+}

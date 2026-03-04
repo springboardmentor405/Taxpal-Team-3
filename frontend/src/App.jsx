@@ -1,24 +1,11 @@
-import AuthCard from "./components/Auth/AuthCard";
-import AuthHeader from "./components/Auth/AuthHeader";
-import AuthLink from "./components/Auth/AuthLink";
-import InputField from "./components/Auth/InputField";
-import LeftSide from "./components/Leftside";
-//import ComponentPreview from "./pages/ComponentPreview";
-import SignUp from "./pages/SignUp";
+import "./App.css";
+import VerifyEmail from "./pages/VerifyEmail";
+
 
 function App() {
-  return(
-
-    // <LeftSide/>
-    <SignUp/>
-    // <AuthCard/>
-    // <AuthHeader/>
-    // <AuthLink/>
-    // <InputField/>
-    
-  )
-  
+  return (
+    <VerifyEmail />
+  );
 }
 
 export default App;
-
