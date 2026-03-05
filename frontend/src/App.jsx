@@ -4,7 +4,7 @@ import AuthLink from "./components/Auth/AuthLink";
 import InputField from "./components/Auth/InputField";
 import LeftSide from "./components/Leftside";
 //import ComponentPreview from "./pages/ComponentPreview";
-import SignUp from "./pages/SignUp";
+import SignUp from "./pages/ForgotPassword";
 
 function App() {
   return(
