@@ -1,0 +1,122 @@
+$bg-color: rgba(175, 175, 175, 0.178);
+
+body {
+    padding: 0;
+    margin: 0;
+    background-image: url("../assets/images/background_image.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    min-width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .auth-layout {
+        display: flex;
+        align-items: stretch;
+        width: 90%;
+        min-height: 75vh;
+        margin: auto;
+        background-color: $bg-color;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(10px);
+        border-radius: 20px;
+        border-radius: 25px;    
+        border: 5px solid rgba(0, 0, 0, 0.14);
+        box-shadow: 0 4px 30px rgba(104, 185, 218, 0.1);
+        &:hover {
+            background: rgba(233, 233, 233, 0.219);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    }
+
+        .auth-left,
+        .auth-right {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .auth-left {
+            padding: 3%;
+             flex: 1;
+            display: flex;
+            justify-content: start;
+            align-items: left;
+        }
+
+       .auth-right {
+        background: transparent;
+        align-items: center;
+        justify-content: center;
+        padding-top: 0;
+    }
+
+        @media (max-width: 900px) {
+            flex-direction: column;
+            .auth-left {
+                display: flex;
+            }
+        }
+    }
+}
+
+$bg-color: rgba(172, 172, 172, 0.205);
+
+@font-face {
+    font-family: 'Eras Bold ITC';
+    src: url('../fonts/Eras-Bold-ITC.woff2') format('woff2'),
+         url('../fonts/Eras-Bold-ITC.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+.leftside {
+    height: 100%;
+    width: auto;
+    padding: 2% 10%;
+    background-color: $bg-color;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border-radius: 10px 0 0 10px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 30px rgba(78, 78, 78, 0.1);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    &:hover {
+        background: rgba(221, 221, 221, 0.281);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    }
+
+    img {
+        height: 200px;
+        width: 200px;
+        margin-left: 25%;
+    }
+
+    h2 {
+        color: rgba(255, 255, 255, 0.85);
+        font-family: 'Eras Bold ITC', sans-serif;
+        font-weight: bold;
+        font-size: 50px;
+    }
+
+    p {
+        font-family: 'Salsa', cursive;
+        color: rgba(234, 234, 234, 0.8);
+        font-size: 30px;
+        font-weight: 600;
+
+        &:last-child {
+            color: rgba(234, 234, 234, 1);
+            font-family: 'Inter', sans-serif;
+            font-weight: 400;
+        }
+    }
+}

@@ -1,0 +1,42 @@
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 25px;
+  padding: 10px 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.left-section {
+  display: flex;
+  align-items: center;
+}
+
+.icon {
+  color: #fff;
+  display: flex;
+  align-items: center;
+  margin-right: 8px;
+}
+
+.divider {
+  width: 1px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.5);
+  margin-right: 10px;
+}
+
+.input-text {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #fff;
+  font-size: 14px;
+  width: 100%;
+}
+
+.input-text::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
