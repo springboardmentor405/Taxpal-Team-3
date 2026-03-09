@@ -1,0 +1,113 @@
+.dashboard-layout {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+    background-color: var(--bg-color, #F8F9FB);
+
+    .main-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        margin-left: 270px;
+    }
+
+    .top-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 2rem;
+        background-color: transparent;
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background-color: #F0F2F5;
+            border-radius: 8px;
+            padding: 0.6rem 1rem;
+            width: 350px;
+
+            .search-icon {
+                color: var(--text-light, #666);
+                margin-right: 0.8rem;
+            }
+
+            input {
+                border: none;
+                background: none;
+                outline: none;
+                width: 100%;
+                color: var(--text-dark, #333);
+                font-family: inherit;
+
+                &::placeholder {
+                    color: var(--text-light, #666);
+                }
+            }
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+
+            .notification-btn {
+                background: none;
+                border: none;
+                color: var(--text-light, #666);
+                cursor: pointer;
+                padding: 0.5rem;
+                position: relative;
+
+                &:hover {
+                    color: var(--primary, #42D2CE);
+                }
+            }
+
+            .user-profile {
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+
+                .user-info {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: flex-end;
+
+                    .user-name {
+                        font-weight: 600;
+                        color: var(--text-dark, #333);
+                        font-size: 0.95rem;
+                    }
+
+                    .user-role {
+                        font-size: 0.8rem;
+                        color: var(--text-light, #666);
+                    }
+                }
+
+                .avatar {
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 50%;
+                    overflow: hidden;
+                    background-color: var(--secondary, #0a0a3a);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+
+                    .avatar-fallback {
+                        color: var(--white, #fff);
+                        font-weight: 500;
+                        font-size: 1rem;
+                    }
+                }
+            }
+        }
+    }
+
+    .page-content {
+        padding: 0 2rem 2rem 2rem;
+        flex: 1;
+    }
+}

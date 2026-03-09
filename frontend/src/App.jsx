@@ -1,24 +1,49 @@
-import AuthCard from "./components/Auth/AuthCard";
-import AuthHeader from "./components/Auth/AuthHeader";
-import AuthLink from "./components/Auth/AuthLink";
-import InputField from "./components/Auth/InputField";
-import LeftSide from "./components/Leftside";
-//import ComponentPreview from "./pages/ComponentPreview";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import SignUp from "./pages/SignUp";
+import Login from "./pages/Login";
+import ForgotPassword from "./pages/ForgotPassword";
+import VerifyMail from "./pages/VerifyEmail";
+import ResetPassword from "./pages/ResetPassword";
+import Dashboard from "./pages/Dashboard";
+import Sidebar from "./layouts/Sidebar";
+import DashboardLayout from "./layouts/DashboardLayout";
 
 function App() {
-  return(
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Navigate to="/login" />} />
 
-    // <LeftSide/>
-    <SignUp/>
-    // <AuthCard/>
-    // <AuthHeader/>
-    // <AuthLink/>
-    // <InputField/>
-    
-  )
-  
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/verify-mail" element={<VerifyMail />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+
+        <Route
+          path="/dashboard"
+          element={
+            <DashboardLayout>
+              <Dashboard />
+            </DashboardLayout>
+          }
+        />
+      </Routes>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
+    </Router>
+  );
 }
 
 export default App;
-

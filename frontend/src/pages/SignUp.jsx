@@ -1,5 +1,7 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 import AuthCard from "../components/Auth/AuthCard";
 import AuthHeader from "../components/Auth/AuthHeader";
@@ -12,6 +14,7 @@ import AuthLayout from "../layouts/AuthLayout";
 import { User, Mail, Lock, Eye } from "lucide-react";
 
 function SignUp() {
+  const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -22,20 +25,24 @@ function SignUp() {
   const handleSignUp = async () => {
     
     if (!username || !email || !password || !confirmPassword) {
-      return alert("All fields are required");
+      toast.error("All fields are required");
+      return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      return alert("Enter a valid email address");
+      toast.error("Enter a valid email address");
+      return;
     }
 
     if (password.length < 8) {
-      return alert("Password must be at least 8 characters");
+      toast.error("Password must be at least 8 characters");
+      return;
     }
 
     if (password !== confirmPassword) {
-      return alert("Passwords do not match");
+      toast.error("Passwords do not match");
+      return;
     }
 
     try {
@@ -50,18 +57,20 @@ function SignUp() {
         password,
       });
 
-      alert("Signup successful");
+      toast.success("Signup successful! Please log in.");
       console.log(response.data);
 
       setUsername("");
       setEmail("");
       setPassword("");
       setConfirmPassword("");
+      
+      navigate("/login");
 
     } catch (error) {
       const message =
         error.response?.data?.message || "Signup failed";
-      alert(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }

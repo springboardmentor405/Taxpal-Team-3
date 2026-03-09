@@ -6,9 +6,17 @@ export default function PasswordField({
   onChange,
   leftIcon,
   rightIcon,
-  value
+  value,
+  name,
+  ...rest
 }) {
   const [showPassword, setShowPassword] = useState(false);
+
+  const handleChange = (e) => {
+    if (onChange) {
+      onChange(e);
+    }
+  };
 
   return (
     <div className="password-wrapper">
@@ -22,7 +30,9 @@ export default function PasswordField({
         placeholder={placeholder}
         className="password-input"
         value={value}
-        onChange={onChange}
+        onChange={handleChange}
+        name={name}
+        {...rest}
       />
 
       <span

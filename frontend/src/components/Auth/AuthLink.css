@@ -10,3 +10,11 @@
   cursor: pointer;
   font-family: 'Salsa', serif;
 }
+
+.auth-link a {
+  text-decoration: none;
+}
+
+.auth-link a span {
+  text-decoration: none;
+}

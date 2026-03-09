@@ -7,8 +7,16 @@ export default function InputField({
   leftIcon,
   rightIcon,
   value,
-  onChange
+  onChange,
+  name,
+  ...rest
 }) {
+  const handleChange = (e) => {
+    if (onChange) {
+      onChange(e);
+    }
+  };
+
   return (
     <div className="input-wrapper">
       <div className="left-section">
@@ -21,7 +29,9 @@ export default function InputField({
         placeholder={placeholder}
         className="input-text"
         value={value}
-        onChange={onChange}
+        onChange={handleChange}
+        name={name}
+        {...rest}
       />
 
       {rightIcon && <span className="right-icon">{rightIcon}</span>}
