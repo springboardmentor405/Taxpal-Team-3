@@ -1,13 +1,29 @@
-import React from 'react';
+import React, { useState } from 'react';
 import DashboardLayout from '../layouts/DashboardLayout';
 import MetricCard from '../components/Dashboard/MetricCard';
 import IncomeExpenseChart from '../components/Dashboard/IncomeExpenseChart';
 import ExpenseBreakdownChart from '../components/Dashboard/ExpenseBreakdownChart';
+import TransactionModal from '../components/Dashboard/TransactionModal';
 import '../sass/Dashboard.scss';
 
 const Dashboard = () => {
+  const [activeModal, setActiveModal] = useState(null); // 'income' | 'expense' | null
+
+  const handleSave = (data) => {
+    console.log('Saved transaction:', data);
+    // TODO: send to backend
+  };
+
   return (
     <div className="dashboard-page">
+      {activeModal && (
+        <TransactionModal
+          type={activeModal}
+          onClose={() => setActiveModal(null)}
+          onSave={handleSave}
+        />
+      )}
+
       <div className="welcome-section">
         <div className="welcome-text">
           <h1>Good Morning, Alex</h1>
@@ -15,8 +31,8 @@ const Dashboard = () => {
         </div>
         <div className="welcome-actions">
           <button className="btn-secondary">Download Reports</button>
-          <button className="btn-blue">Add New Income</button>
-          <button className="btn-blue">Add New Expenses</button>
+          <button className="btn-blue" onClick={() => setActiveModal('income')}>Add New Income</button>
+          <button className="btn-blue" onClick={() => setActiveModal('expense')}>Add New Expenses</button>
         </div>
       </div>
 

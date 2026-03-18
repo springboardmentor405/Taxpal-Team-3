@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutGrid, RefreshCw, Wallet, Calculator, BarChart3 } from 'lucide-react';
+import { LayoutGrid, RefreshCw, Wallet, Calculator, BarChart3, Settings, LogOut } from 'lucide-react';
 import myLogo from '../assets/images/logo.svg'; 
 import '../sass/Sidebar.scss';
 
@@ -31,6 +31,24 @@ const Sidebar = () => {
           </Link>
         ))}
       </nav>
+
+      <div className="sidebar-footer">
+        <div className="user-profile">
+          <div className="user-avatar-placeholder">AM</div>
+          <div className="user-info">
+            <h4 className="user-name">Alex Morgan</h4>
+            <p className="user-role">Freelancer</p>
+          </div>
+        </div>
+        <div className="footer-links">
+          <Link to="/settings" className="footer-link">
+            <Settings size={18} /> <span>Settings</span>
+          </Link>
+          <Link to="/login" className="footer-link">
+            <LogOut size={18} /> <span>Log out</span>
+          </Link>
+        </div>
+      </div>
     </aside>
   );
 };
