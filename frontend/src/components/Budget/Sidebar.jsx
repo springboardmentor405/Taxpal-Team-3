@@ -1,0 +1,38 @@
+import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { LayoutGrid, RefreshCw, Wallet, Calculator, BarChart3 } from 'lucide-react';
+import myLogo from '../../assets/images/logo.png'; 
+import '../../sass/Sidebar.scss';
+
+const Sidebar = () => {
+  const location = useLocation();
+  const isActive = (path) => location.pathname === path;
+
+  const menuItems = [
+    { name: 'Dashboard', icon: <LayoutGrid size={20} />, path: '/dashboard' },
+    { name: 'Transactions', icon: <RefreshCw size={20} />, path: '/transactions' },
+    { name: 'Budgets', icon: <Wallet size={20} />, path: '/budgets' },
+    { name: 'Tax Estimator', icon: <Calculator size={20} />, path: '/tax-estimator' },
+    { name: 'Reports', icon: <BarChart3 size={20} />, path: '/reports' },
+  ];
+
+  return (
+    <aside className="sidebar">
+      <div className="sidebar-header">
+        <img src={myLogo} alt="Logo" className="logo-img" />
+        <h2 className="brand-name">Tax Pal</h2>
+      </div>
+
+      <nav className="sidebar-nav">
+        {menuItems.map((item) => (
+          <Link key={item.name} to={item.path} className={`nav-pill ${isActive(item.path) ? 'active' : ''}`}>
+            {item.icon}
+            <span>{item.name}</span>
+          </Link>
+        ))}
+      </nav>
+    </aside>
+  );
+};
+
+export default Sidebar;

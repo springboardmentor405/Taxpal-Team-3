@@ -1,0 +1,141 @@
+.sidebar {
+  width: 240px;
+  background: linear-gradient(180deg, #1a6b87 0%, #0f4f65 100%);
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  padding: 20px 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  z-index: 1000;
+
+
+.sidebar-header {
+  position: relative;
+  padding: 10px 10px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.15);
+  display: flex;
+  justify-content: center;
+
+ .logo-img {
+    width: 90px;
+    height: 90px;
+    object-fit: contain;
+    margin-bottom: 35px;
+  }
+
+ .brand-name {
+    color: white;
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: 1px;
+    position: absolute;
+    bottom: 22px;
+    right: 12px;
+  }
+}
+
+  .sidebar-nav {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    .nav-pill {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 20px;
+      color: white;
+      text-decoration: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 500;
+      transition: all 0.2s;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+
+      &.active {
+        background: #1C88C7;
+        border-color: #1C88C7;
+        color: white;
+        font-weight: 600;
+      }
+
+      &:hover:not(.active) {
+        background: rgba(255,255,255,0.18);
+        border-color: rgba(255,255,255,0.3);
+      }
+    }
+  }
+
+  .sidebar-footer {
+    border-top: 1px solid rgba(255,255,255,0.15);
+    padding-top: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    .sidebar-user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      .user-avatar-sidebar {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        overflow: hidden;
+        background: #1C88C7;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 700;
+        font-size: 13px;
+        flex-shrink: 0;
+      }
+
+      .user-details {
+        .user-name-sidebar {
+          color: white;
+          font-size: 13px;
+          font-weight: 600;
+          margin: 0;
+        }
+        .user-role-sidebar {
+          color: rgba(255,255,255,0.5);
+          font-size: 11px;
+          margin: 0;
+        }
+      }
+    }
+
+    .sidebar-actions {
+      display: flex;
+      justify-content: space-between;
+
+      button {
+        background: none;
+        border: none;
+        color: rgba(255,255,255,0.6);
+        font-size: 12px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 8px;
+        border-radius: 6px;
+        transition: all 0.2s;
+
+        &:hover {
+          color: white;
+          background: rgba(255,255,255,0.1);
+        }
+      }
+    }
+  }
+}
