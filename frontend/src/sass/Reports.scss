@@ -1,0 +1,164 @@
+.reports-page {
+  padding: 1.5rem 2rem;
+  background: #f8f9fb;
+  width: 100%;
+  max-width: 100%;
+
+  h1 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-bottom: 1.2rem;
+  }
+
+  .reports-section {
+    background: white;
+    border-radius: 12px;
+    padding: 1.2rem 1.5rem;
+    margin-bottom: 1.2rem;
+    border: 1px solid #e5e7eb;
+
+    h2 {
+      font-size: 15px;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 1rem;
+    }
+  }
+
+  .report-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+
+      label {
+        font-size: 13px;
+        font-weight: 500;
+        color: #6b7280;
+      }
+
+      select {
+        padding: 9px 12px;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 14px;
+        color: #374151;
+        background: #f9fafb;
+        cursor: pointer;
+
+        &:focus {
+          outline: none;
+          border-color: #2563eb;
+        }
+      }
+    }
+
+    .btn-generate {
+      grid-column: 2;
+      align-self: end;
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+
+      &:hover {
+        background: #1d4ed8;
+      }
+    }
+  }
+
+  .report-table-wrap {
+    overflow-x: auto;
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      overflow: hidden;
+
+      th {
+        text-align: left;
+        padding: 10px 14px;
+        font-size: 13px;
+        font-weight: 600;
+        color: #374151;
+        border-bottom: 1px solid #e5e7eb;
+        border-right: 1px solid #e5e7eb;
+        background: white;
+      }
+
+      td {
+        padding: 12px 14px;
+        font-size: 14px;
+        color: #374151;
+        border-bottom: 1px solid #e5e7eb;
+        border-right: 1px solid #e5e7eb;
+      }
+    }
+  }
+
+  .report-preview {
+    .preview-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-bottom: 1rem;
+
+      button {
+        padding: 7px 18px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+
+        &.btn-print {
+          background: white;
+          border: 1px solid #d1d5db;
+          color: #374151;
+        }
+
+        &.btn-download {
+          background: #2563eb;
+          border: none;
+          color: white;
+        }
+      }
+    }
+
+    .preview-box {
+      background: #f3f4f6;
+      border-radius: 10px;
+      min-height: 160px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 1.5rem;
+
+      h3 {
+        font-size: 16px;
+        font-weight: 700;
+        color: #374151;
+        margin: 0;
+      }
+
+      p {
+        font-size: 12px;
+        color: #9ca3af;
+        margin: 0;
+        text-align: center;
+      }
+    }
+  }
+}
