@@ -1,0 +1,384 @@
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.50);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    animation: tm-fadeIn 0.18s ease;
+}
+
+@keyframes tm-fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes tm-slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-box {
+    background: #ffffff;
+    border-radius: 10px;
+    width: 560px;
+    max-width: 96vw;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.22);
+    display: flex;
+    flex-direction: column;
+    animation: tm-slideUp 0.22s ease;
+    overflow: hidden;
+}
+
+.modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 18px 20px 14px 20px;
+
+    .modal-title {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #111827;
+        margin: 0 0 4px 0;
+        line-height: 1.3;
+    }
+
+    .modal-subtitle {
+        font-size: 0.74rem;
+        color: #9ca3af;
+        margin: 0;
+        line-height: 1.4;
+    }
+
+    .modal-close-btn {
+        flex-shrink: 0;
+        margin-top: 2px;
+        background: #ffffff;
+        border: 1px solid #d1d5db;
+        border-radius: 5px;
+        width: 24px;
+        height: 24px;
+        font-size: 1rem;
+        line-height: 1;
+        color: #6b7280;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        transition: background 0.12s, color 0.12s;
+
+        &:hover {
+            background: #f3f4f6;
+            color: #111827;
+        }
+    }
+}
+
+.modal-body {
+    padding: 0 20px 4px 20px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.modal-section-title {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 14px 0 12px 0;
+}
+
+.modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+
+    label {
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: #374151;
+    }
+}
+
+.tm-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 36px;
+    box-shadow: none;
+    background: transparent;
+
+    input {
+        width: 100%;
+        height: 36px;
+        padding: 0 30px 0 10px;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        font-size: 0.82rem;
+        color: #374151;
+        background: #ffffff;
+        outline: none;
+        box-sizing: border-box;
+        transition: border-color 0.18s, box-shadow 0.18s;
+
+        &::placeholder {
+            color: #9ca3af;
+        }
+
+        &:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+        }
+    }
+
+    .input-clear {
+        position: absolute;
+        right: 6px;
+        background: #ffffff;
+        border: 1px solid #d1d5db;
+        border-radius: 4px;
+        width: 18px;
+        height: 18px;
+        font-size: 0.78rem;
+        color: #9ca3af;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        line-height: 1;
+        flex-shrink: 0;
+
+        &:hover {
+            background: #f3f4f6;
+            color: #374151;
+        }
+    }
+}
+
+.tm-amount-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 36px;
+
+    input {
+        width: 100%;
+        height: 36px;
+        padding: 0 10px 0 22px;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        font-size: 0.82rem;
+        color: #374151;
+        background: #ffffff;
+        outline: none;
+        box-sizing: border-box;
+        transition: border-color 0.18s, box-shadow 0.18s;
+
+        &::placeholder {
+            color: #9ca3af;
+        }
+
+        &:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+        }
+    }
+
+    .amount-prefix {
+        position: absolute;
+        left: 9px;
+        font-size: 0.82rem;
+        color: #6b7280;
+        pointer-events: none;
+        user-select: none;
+    }
+}
+
+.tm-date-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 36px;
+
+    input {
+        width: 100%;
+        height: 36px;
+        padding: 0 10px;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        font-size: 0.82rem;
+        color: #374151;
+        background: #ffffff;
+        outline: none;
+        box-sizing: border-box;
+        transition: border-color 0.18s, box-shadow 0.18s;
+
+        &::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+            opacity: 0; 
+            position: absolute;
+            right: 8px;
+            width: 20px;
+            height: 20px;
+        }
+
+        &::placeholder {
+            color: #9ca3af;
+        }
+
+        &:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+        }
+    }
+
+    .date-icon {
+        position: absolute;
+        right: 8px;
+        font-size: 0.9rem;
+        color: #6b7280;
+        pointer-events: none; 
+        user-select: none;
+    }
+}
+
+.tm-select-wrapper {
+    position: relative;
+    width: 100%;
+    height: 36px;
+
+    select {
+        width: 100%;
+        height: 36px;
+        padding: 0 28px 0 10px;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        font-size: 0.82rem;
+        color: #374151;
+        background: #ffffff;
+        appearance: none;
+        -webkit-appearance: none;
+        outline: none;
+        cursor: pointer;
+        box-sizing: border-box;
+        transition: border-color 0.18s, box-shadow 0.18s;
+
+        option[value=""] {
+            color: #9ca3af;
+        }
+
+        &:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+        }
+    }
+
+    .select-arrow {
+        position: absolute;
+        right: 9px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 0.85rem;
+        color: #6b7280;
+        pointer-events: none;
+        user-select: none;
+    }
+}
+
+/* ── Notes textarea ── */
+.modal-form .form-group textarea {
+    width: 100%;
+    height: 76px;
+    padding: 8px 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    color: #374151;
+    background: #ffffff;
+    outline: none;
+    resize: none;
+    font-family: inherit;
+    box-sizing: border-box;
+    transition: border-color 0.18s, box-shadow 0.18s;
+
+    &::placeholder {
+        color: #9ca3af;
+    }
+
+    &:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+    }
+}
+
+.modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 12px 20px 16px 20px;
+    border-top: 1px solid #e5e7eb;
+    margin-top: 10px;
+
+    .btn-cancel {
+        padding: 7px 22px;
+        border: 1px solid #d1d5db;
+        border-radius: 7px;
+        background: #ffffff;
+        color: #374151;
+        font-size: 0.84rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.12s, border-color 0.12s;
+
+        &:hover {
+            background: #f9fafb;
+            border-color: #9ca3af;
+        }
+    }
+
+    .btn-save {
+        padding: 7px 24px;
+        border: none;
+        border-radius: 7px;
+        background: #2563eb;
+        color: #ffffff;
+        font-size: 0.84rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.15s;
+
+        &:hover {
+            background: #1d4ed8;
+        }
+    }
+}

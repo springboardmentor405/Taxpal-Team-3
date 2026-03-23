@@ -1,0 +1,95 @@
+.metric-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    border: 1px solid #EAEAEA;
+
+    .metric-title {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .metric-amount {
+        font-size: 1.4rem;
+        font-weight: 700;
+        padding: 0.25rem 0.6rem;
+        border-radius: 6px;
+        width: fit-content;
+
+        &.positive {
+            color: #166534;
+        }
+
+        &.negative {
+            color: #7f1d1d;
+        }
+
+        &.success {
+            color: #000000;
+        }
+
+        &.plain {
+            color: #333;
+        }
+    }
+
+    .metric-percentage {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        padding: 0.25rem 0.5rem;
+        border-radius: 5px;
+        width: fit-content;
+
+        .icon {
+            display: flex;
+            align-items: center;
+            font-size: 0.8rem;
+        }
+
+        &.positive {
+            color: #166534;
+            background: #dcfce7;
+
+            .icon svg {
+                color: #166534 !important;
+            }
+        }
+
+        &.negative {
+            color: #7f1d1d;
+            background: #fee2e2;
+
+            .icon svg {
+                color: #7f1d1d !important;
+            }
+        }
+
+        &.success {
+            color: #065f46;
+            background: #d1fae5;
+
+            .icon svg {
+                color: #16a34a !important;
+            }
+        }
+
+        &.plain {
+            color: #058ccf;
+            background: #0b609529;
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    .metric-card {
+        padding: 0.5rem 0.75rem;
+    }
+}

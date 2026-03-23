@@ -1,0 +1,15 @@
+.expense-breakdown-chart {
+    .chart-header {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 0.5rem;
+
+        h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-dark, #333);
+            margin: 0;
+        }
+    }
+}

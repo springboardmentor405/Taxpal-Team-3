@@ -1,0 +1,79 @@
+$bg-color: rgba(255, 255, 255, 0);
+
+
+
+@font-face {
+  font-family: 'Eras Bold ITC';
+  src: url('fonts/ErasBoldITC.woff2') format('woff2'),
+       url('fonts/ErasBoldITC.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+    font-family: 'Salsa';
+    src: url('../fonts/salsa-v1.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap; 
+}
+
+@import url('https://fonts.googleapis.com');
+
+.leftside {
+    height: auto;
+    width: auto;
+    padding: 2% 10%;
+    background-color: rgba(255, 255, 255, 0);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 1px;
+    border: 1px solid rgba(255, 255, 255, 0);
+    box-shadow: 0 4px 30px rgba(255, 255, 255, 0);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; 
+    align-items: center;     
+    text-align: center;  
+    margin-left: 10px;
+    margin-top: 10px; 
+    
+    img {
+        height: 200px;
+        width: 200px;
+    }
+
+    h2 {
+        color: rgba(255, 255, 255, 0.85);
+        font-family: "Eras Bold ITC", "Eras Demi ITC", "Eras Medium ITC", sans-serif;
+        font-weight: bold;
+        font-size: 45px;
+        margin-right: 100px;
+        margin-bottom: 0;
+        text-align:justify;
+        line-height: 1.1;
+        
+    }
+
+    p {
+        font-family: 'Salsa', cursive;
+        color: rgba(234, 234, 234, 0.8);
+        font-size: 25px;
+        font-weight: 400;
+        margin-top: 20px;
+        text-align: justify;
+        
+
+        &:last-child {
+            color: rgba(234, 234, 234, 1);
+            font-family: 'Inter', sans-serif;
+            font-weight: 400;
+            font-size: 20px;
+            letter-spacing: 2px;
+        }
+    }
+
+
+
+}

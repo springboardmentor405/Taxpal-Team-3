@@ -1,0 +1,54 @@
+@import '../index.css';
+
+.dashboard-page {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  flex: 1;
+  min-height: 0;
+
+  .welcome-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .welcome-text {
+      h1 {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--secondary, #0a0a3a);
+        margin: 0 0 0.2rem 0;
+      }
+
+      p {
+        color: var(--text-light, #666);
+        margin: 0;
+        font-size: 0.9rem;
+      }
+    }
+
+    .welcome-actions {
+      display: flex;
+      gap: 1rem;
+    }
+  }
+
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+  }
+
+  .charts-grid {
+    display: grid;
+    grid-template-columns: 2fr 1.5fr;
+    gap: 0.75rem;
+    margin-top: 0;
+    flex: 1;
+    min-height: 0;
+
+    &>* {
+      min-height: 0;
+    }
+  }
+}
