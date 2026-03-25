@@ -12,12 +12,14 @@ const CreateBudgetModal = ({ onClose, onCreate }) => {
     month: "",
     description: "",
   });
-
-  const handleSubmit = () => {
+  
+const handleSubmit = () => {
     if (!form.category || !form.budget) return;
     onCreate({
       category: form.category,
       budget: parseFloat(form.budget),
+      month: form.month,
+      description: form.description,
       color: "#2563eb",
     });
   };
