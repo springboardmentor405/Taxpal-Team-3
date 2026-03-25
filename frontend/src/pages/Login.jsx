@@ -35,12 +35,12 @@ const handleLogin = async (e) => {
   try {
     const res = await axios.post(`${API_URL}/login`, formData);
 
-    // Save token in localStorage
+    // ✅ STORE BOTH
     localStorage.setItem("token", res.data.token);
+    localStorage.setItem("user", JSON.stringify(res.data.user));
 
     toast.success(res.data.message || 'Logged in');
 
-    // Redirect to dashboard
     navigate("/dashboard");
   } catch (err) {
     toast.error(err.response?.data?.message || "Login failed");

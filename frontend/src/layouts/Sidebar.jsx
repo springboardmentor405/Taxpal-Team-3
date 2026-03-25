@@ -1,11 +1,12 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { LayoutGrid, RefreshCw, Wallet, Calculator, BarChart3, Settings, LogOut } from 'lucide-react';
-import myLogo from '../assets/images/logo.svg'; 
+import myLogo from '../assets/images/logo.svg';
 import '../sass/Sidebar.scss';
 
 const Sidebar = () => {
   const location = useLocation();
+  const user = JSON.parse(localStorage.getItem("user"));
   const isActive = (path) => location.pathname === path;
 
   const menuItems = [
@@ -34,10 +35,12 @@ const Sidebar = () => {
 
       <div className="sidebar-footer">
         <div className="user-profile">
-          <div className="user-avatar-placeholder">AM</div>
+          <div className="user-avatar-placeholder">
+            {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
+          </div>
           <div className="user-info">
-            <h4 className="user-name">Alex Morgan</h4>
-            <p className="user-role">Freelancer</p>
+            <h4 className="user-name">{user?.name || "User"}</h4>
+            <p className="user-role">{user?.email || "No Email"}</p>
           </div>
         </div>
         <div className="footer-links">

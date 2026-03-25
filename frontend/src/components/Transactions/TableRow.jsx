@@ -26,6 +26,9 @@ const TableRow = ({
   &:hover {
     background: #fafafa;
   }
+    .table-row:hover {
+  background: #fafafa;
+}
 
   .date {
     font-size: 14px;
@@ -189,3 +192,4 @@ const TableRow = ({
 };
 
 export default TableRow;
+

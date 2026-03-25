@@ -1,133 +1,477 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { toast } from "react-toastify";
+import React, { useState, useEffect } from 'react';
+import { Edit2, Lock, Eye, Check, X, Shield, Smartphone, Mail, Plus, Trash2 } from 'lucide-react';
+import { toast } from 'react-toastify';
+import axios from 'axios';
+import '../sass/Settings.scss';
 
-import AuthCard from "../components/Auth/AuthCard";
-import AuthHeader from "../components/Auth/AuthHeader";
-import InputField from "../components/Auth/InputField";
-import PasswordField from "../components/Auth/PasswordField";
-import PrimaryButton from "../components/Auth/PrimaryButton";
-import AuthLink from "../components/Auth/AuthLink";
-import AuthLayout from "../layouts/AuthLayout";
+const Settings = () => {
+  const [activeTab, setActiveTab] = useState('Profile');
+  const [categorySubTab, setCategorySubTab] = useState('Expense');
 
-import { User, Mail, Lock, Eye } from "lucide-react";
+  // --- Profile State ---
+  const [profile, setProfile] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    role: '',
+    location: ''
+  });
 
-function SignUp() {
-  const navigate = useNavigate();
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) return;
 
-  const [loading, setLoading] = useState(false);
+        // Fetch Profile & Notifications
+        const profileRes = await axios.get("http://localhost:5000/api/users/profile", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const profileData = profileRes.data;
+        setProfile({
+          firstName: profileData.firstName || '',
+          lastName: profileData.lastName || '',
+          email: profileData.email || '',
+          phone: profileData.phone || '',
+          role: profileData.role || '',
+          location: profileData.location || ''
+        });
+        if (profileData.notificationSettings) {
+          setNotifications(prev => ({ ...prev, ...profileData.notificationSettings }));
+        }
 
-  const handleSignUp = async () => {
-    
-    if (!username || !email || !password || !confirmPassword) {
-      toast.error("All fields are required");
-      return;
-    }
+        // Fetch Categories
+        const catRes = await axios.get("http://localhost:5000/api/categories", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setExpenseCategories(catRes.data.filter(c => c.type === 'Expense'));
+        setIncomeCategories(catRes.data.filter(c => c.type === 'Income'));
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      toast.error("Enter a valid email address");
-      return;
-    }
+      } catch (err) {
+        console.error("Failed to load settings", err);
+      }
+    };
+    fetchData();
+  }, []);
 
-    if (password.length < 8) {
-      toast.error("Password must be at least 8 characters");
-      return;
-    }
+  const handleProfileChange = (e) => {
+    const { name, value } = e.target;
+    setProfile(prev => ({ ...prev, [name]: value }));
+  };
 
-    if (password !== confirmPassword) {
-      toast.error("Passwords do not match");
-      return;
-    }
-
+  const handleProfileSave = async (e) => {
+    e.preventDefault();
     try {
-      setLoading(true);
-
-      const apiBase =
-        import.meta.env.VITE_API_URL || "http://localhost:5000";
-
-      const response = await axios.post(`${apiBase}/api/auth/signup`, {
-        name: username,
-        email,
-        password,
+      const token = localStorage.getItem("token");
+      if (!token) {
+        toast.error("You are not logged in!");
+        return;
+      }
+      await axios.put("http://localhost:5000/api/users/profile", profile, {
+        headers: { Authorization: `Bearer ${token}` }
       });
-
-      toast.success("Signup successful! Please log in.");
-      console.log(response.data);
-
-      setUsername("");
-      setEmail("");
-      setPassword("");
-      setConfirmPassword("");
-      
-      navigate("/login");
-
-    } catch (error) {
-      const message =
-        error.response?.data?.message || "Signup failed";
-      toast.error(message);
-    } finally {
-      setLoading(false);
+      toast.success("Profile saved successfully!");
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to save profile");
     }
   };
 
-  return (
-    <AuthLayout>
-      <AuthCard>
-        <AuthHeader
-          title="Get Started"
-          subtitle="Create your free account"
-        />
+  // --- Categories State ---
+  const [expenseCategories, setExpenseCategories] = useState([]);
+  const [incomeCategories, setIncomeCategories] = useState([]);
+  const [newCategoryName, setNewCategoryName] = useState('');
 
-        <InputField
-          placeholder="Enter your Username"
-          leftIcon={<User size={20} />}
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
+  const handleAddCategory = async () => {
+    if (!newCategoryName.trim()) return;
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.post("http://localhost:5000/api/categories", {
+        name: newCategoryName,
+        type: categorySubTab,
+        color: ['red', 'purple', 'orange', 'blue', 'green'][Math.floor(Math.random() * 5)]
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
 
-        <InputField
-          placeholder="Enter your Email"
-          leftIcon={<Mail size={20} />}
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+      if (categorySubTab === 'Expense') {
+        setExpenseCategories(prev => [...prev, res.data]);
+      } else {
+        setIncomeCategories(prev => [...prev, res.data]);
+      }
+      setNewCategoryName('');
+      toast.success("Category added!");
+    } catch (err) {
+      toast.error("Failed to add category");
+    }
+  };
 
-        <PasswordField
-          placeholder="Enter your Password"
-          leftIcon={<Lock size={20} />}
-          rightIcon={<Eye size={20} />}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+  const handleDeleteCategory = async (id, type) => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete(`http://localhost:5000/api/categories/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (type === 'Expense') {
+        setExpenseCategories(prev => prev.filter(c => c._id !== id));
+      } else {
+        setIncomeCategories(prev => prev.filter(c => c._id !== id));
+      }
+      toast.success("Category deleted!");
+    } catch (err) {
+      toast.error("Failed to delete category");
+    }
+  };
 
-        <PasswordField
-          placeholder="Confirm your Password"
-          leftIcon={<Lock size={20} />}
-          rightIcon={<Eye size={20} />}
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-        />
+  // --- Notifications State ---
+  const [notifications, setNotifications] = useState({
+    taxReminder: true,
+    budgetAlert: true,
+    newTransaction: false,
+    lowBalance: true,
+    taxFreq: '3 days before',
+    budgetFreq: 'At 80%',
+    pushEnabled: true,
+    emailEnabled: true
+  });
 
-        <PrimaryButton
-          text={loading ? "Signing up..." : "Sign Up"}
-          onClick={handleSignUp}
-          disabled={loading}
-        />
+  const handleNotifToggle = (key) => {
+    setNotifications(prev => ({ ...prev, [key]: !prev[key] }));
+  };
 
-        <AuthLink
-          text="Already have an account?"
-          linkText="Log in"
-          to="/login"
-        />
-      </AuthCard>
-    </AuthLayout>
+  const handleNotifChange = (e) => {
+    const { name, value } = e.target;
+    setNotifications(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleNotifSave = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.put("http://localhost:5000/api/users/profile", {
+        notificationSettings: notifications
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      toast.success("Notification preferences updated!");
+    } catch (err) {
+      toast.error("Failed to update preferences");
+    }
+  };
+
+  // --- Security State ---
+  const [security, setSecurity] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+    twoFactor: true
+  });
+  const [showPwd, setShowPwd] = useState(false);
+
+  const handleSecurityChange = (e) => {
+    const { name, value } = e.target;
+    setSecurity(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSecuritySave = async (e) => {
+    e.preventDefault();
+    if (!security.currentPassword || !security.newPassword) {
+      toast.error("All password fields are required");
+      return;
+    }
+    if (security.newPassword !== security.confirmPassword) {
+      toast.error("New passwords do not match!");
+      return;
+    }
+    try {
+      const token = localStorage.getItem("token");
+      await axios.put("http://localhost:5000/api/users/change-password", {
+        currentPassword: security.currentPassword,
+        newPassword: security.newPassword
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      toast.success("Password updated successfully!");
+      setSecurity({ currentPassword: '', newPassword: '', confirmPassword: '', twoFactor: security.twoFactor });
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to update password");
+    }
+  };
+
+
+  const renderProfileTab = () => (
+    <form className="settings-form" onSubmit={handleProfileSave}>
+      <div className="form-row">
+        <div className="form-group">
+          <label className="form-label">First Name</label>
+          <input type="text" name="firstName" value={profile.firstName} onChange={handleProfileChange} className="form-input" placeholder="Enter your first name" />
+        </div>
+        <div className="form-group">
+          <label className="form-label">Last Name</label>
+          <input type="text" name="lastName" value={profile.lastName} onChange={handleProfileChange} className="form-input" placeholder="Enter your last name" />
+        </div>
+      </div>
+
+      <div className="form-row">
+        <div className="form-group">
+          <label className="form-label">Email Address</label>
+          <input type="email" name="email" value={profile.email} onChange={handleProfileChange} className="form-input" placeholder="Enter your email address" />
+        </div>
+        <div className="form-group">
+          <label className="form-label">Phone Number</label>
+          <input type="tel" name="phone" value={profile.phone} onChange={handleProfileChange} className="form-input" placeholder="Enter your phone number" />
+        </div>
+      </div>
+
+      <div className="form-row">
+        <div className="form-group">
+          <label className="form-label">Professional Role</label>
+          <select name="role" value={profile.role} onChange={handleProfileChange} className="form-input form-select">
+            <option value="" disabled>Select your role</option>
+            <option value="freelancer">Freelancer</option>
+            <option value="employee">Employee</option>
+            <option value="business_owner">Business Owner</option>
+          </select>
+        </div>
+        <div className="form-group">
+          <label className="form-label">Location / City</label>
+          <input type="text" name="location" value={profile.location} onChange={handleProfileChange} className="form-input" placeholder="Enter your location / city" />
+        </div>
+      </div>
+
+      <div className="form-actions">
+        <button type="button" className="btn-cancel">Discard</button>
+        <button type="submit" className="btn-save">Save Profile</button>
+      </div>
+    </form>
   );
-}
 
-export default SignUp;
+  const renderCategoriesTab = () => {
+    const list = categorySubTab === 'Expense' ? expenseCategories : incomeCategories;
+
+    return (
+      <div className="categories-section">
+        <div className="categories-subtabs">
+          <button 
+            className={`subtab ${categorySubTab === 'Expense' ? 'active' : ''}`}
+            onClick={() => setCategorySubTab('Expense')}
+          >
+            Expense Categories
+          </button>
+          <button 
+            className={`subtab ${categorySubTab === 'Income' ? 'active' : ''}`}
+            onClick={() => setCategorySubTab('Income')}
+          >
+            Income Categories
+          </button>
+        </div>
+
+        <div className="categories-list">
+          {list.map(cat => (
+            <div className="category-item" key={cat._id || cat.id}>
+              <div className="category-info">
+                <div className={`color-dot ${cat.color}`}></div>
+                <span className="category-name">{cat.name}</span>
+              </div>
+              <div className="category-actions">
+                <Edit2 size={16} />
+                <Trash2 size={16} color="#ef4444" onClick={() => handleDeleteCategory(cat._id || cat.id, categorySubTab)} />
+              </div>
+            </div>
+          ))}
+          {list.length === 0 && <p className="empty-text">No categories found.</p>}
+        </div>
+
+        <div className="add-category-inline">
+          <input 
+            type="text" 
+            placeholder="Type new category name..." 
+            value={newCategoryName}
+            onChange={(e) => setNewCategoryName(e.target.value)}
+            className="form-input add-cat-input"
+            onKeyDown={(e) => e.key === 'Enter' && handleAddCategory()}
+          />
+          <button className="add-category-btn-small" onClick={handleAddCategory}>
+            <Plus size={16} /> Add
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  const renderNotificationsTab = () => (
+    <div className="notifications-section">
+      <div className="alert-preferences">
+        <h3 className="section-title">Alert Preferences</h3>
+        
+        <div className="alert-item">
+          <div className="alert-info">
+            <div className="icon-wrapper teal"><span className="money-icon">💰</span></div>
+            <span className="alert-name">Tax Due Date Reminder</span>
+          </div>
+          <div className="alert-controls">
+            <label className="toggle-switch">
+              <input type="checkbox" checked={notifications.taxReminder} onChange={() => handleNotifToggle('taxReminder')} />
+              <span className="slider round"></span>
+            </label>
+          </div>
+        </div>
+        
+        <div className="alert-item">
+          <div className="alert-info">
+            <div className="icon-wrapper yellow"><span className="wallet-icon">💳</span></div>
+            <span className="alert-name">Budget Exceeded Alert</span>
+          </div>
+          <div className="alert-controls">
+            <label className="toggle-switch">
+              <input type="checkbox" checked={notifications.budgetAlert} onChange={() => handleNotifToggle('budgetAlert')} />
+              <span className="slider round"></span>
+            </label>
+          </div>
+        </div>
+        
+        <div className="alert-item">
+          <div className="alert-info">
+            <div className="icon-wrapper orange"><span className="sync-icon">🔄</span></div>
+            <span className="alert-name">New Transaction logged</span>
+          </div>
+          <div className="alert-controls">
+            <label className="toggle-switch">
+              <input type="checkbox" checked={notifications.newTransaction} onChange={() => handleNotifToggle('newTransaction')} />
+              <span className="slider round"></span>
+            </label>
+          </div>
+        </div>
+
+        <div className="alert-item">
+          <div className="alert-info">
+            <div className="icon-wrapper purple"><span className="balance-icon">📉</span></div>
+            <span className="alert-name">Low Balance Warning</span>
+          </div>
+          <div className="alert-controls">
+            <label className="toggle-switch">
+              <input type="checkbox" checked={notifications.lowBalance} onChange={() => handleNotifToggle('lowBalance')} />
+              <span className="slider round"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div className="reminder-frequency">
+        <h3 className="section-title">Reminder Frequency</h3>
+        <div className="frequency-row">
+          <span className="frequency-label">Tax deadline reminder</span>
+          <select name="taxFreq" className="frequency-select" value={notifications.taxFreq} onChange={handleNotifChange}>
+            <option>3 days before</option>
+            <option>1 week before</option>
+            <option>2 weeks before</option>
+          </select>
+        </div>
+        <div className="frequency-row">
+          <span className="frequency-label">Budget Warning</span>
+          <select name="budgetFreq" className="frequency-select" value={notifications.budgetFreq} onChange={handleNotifChange}>
+            <option>At 50%</option>
+            <option>At 80%</option>
+            <option>At 90%</option>
+          </select>
+        </div>
+        <div className="notifications-actions">
+           <button className="btn-save-small" onClick={handleNotifSave}>Save Changes</button>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderSecurityTab = () => (
+    <div className="security-section">
+      <form onSubmit={handleSecuritySave} className="security-form-wrapper">
+        <div className="change-password-box">
+          <h3 className="section-title">Change Password</h3>
+          
+          <div className="password-input-group">
+            <Lock className="input-icon-left" size={18} />
+            <input 
+              type={showPwd ? "text" : "password"} 
+              name="currentPassword"
+              placeholder="Current Password" 
+              value={security.currentPassword}
+              onChange={handleSecurityChange}
+            />
+          </div>
+
+          <div className="password-input-group">
+            <Lock className="input-icon-left" size={18} />
+            <input 
+              type={showPwd ? "text" : "password"} 
+              name="newPassword"
+              placeholder="Enter a new password" 
+              value={security.newPassword}
+              onChange={handleSecurityChange}
+            />
+            <Eye className="input-icon-right" size={18} onClick={() => setShowPwd(!showPwd)} />
+          </div>
+          
+          <div className="password-input-group">
+            <Lock className="input-icon-left" size={18} />
+            <input 
+              type={showPwd ? "text" : "password"} 
+              name="confirmPassword"
+              placeholder="Confirm new Password" 
+              value={security.confirmPassword}
+              onChange={handleSecurityChange}
+            />
+          </div>
+        </div>
+
+
+        <div className="security-actions">
+          <button type="submit" className="btn-save-small">Save Security Options</button>
+        </div>
+      </form>
+    </div>
+  );
+
+  return (
+    <div className="settings-page">
+      <div className="settings-container">
+        <div className="settings-header">
+          <h1 className="settings-title">Settings</h1>
+          <p className="settings-subtitle">Manage your account settings and preferences</p>
+        </div>
+
+        <div className="settings-navigation">
+          {activeTab === 'Profile' && (
+            <div className="profile-section-inline">
+              <div className="avatar-wrapper">
+                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Profile" className="profile-avatar" />
+                <button className="edit-avatar-btn">
+                  <Edit2 size={16} strokeWidth={2.5} />
+                </button>
+              </div>
+            </div>
+          )}
+
+          <div className="tabs-container">
+            {['Profile', 'Categories', 'Notifications', 'Security'].map(tab => (
+              <button 
+                key={tab}
+                className={`tab ${activeTab === tab ? 'active' : ''}`}
+                onClick={() => setActiveTab(tab)}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="tab-content">
+          {activeTab === 'Profile' && renderProfileTab()}
+          {activeTab === 'Categories' && renderCategoriesTab()}
+          {activeTab === 'Notifications' && renderNotificationsTab()}
+          {activeTab === 'Security' && renderSecurityTab()}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Settings;

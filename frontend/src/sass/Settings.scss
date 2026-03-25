@@ -241,7 +241,6 @@
       }
     }
 
-    /* Categories Tab */
     .categories-section {
       padding: 0 10px;
 
@@ -393,29 +392,34 @@
       
       .section-title {
         font-family: 'Nunito', sans-serif;
-        font-size: 18px;
+        font-size: 16px;
         font-weight: 700;
         color: #000;
         margin-top: 0;
-        margin-bottom: 12px;
+        margin-bottom: 8px;
       }
 
       .delivery-methods, .alert-preferences, .reminder-frequency {
         background: #f4f4f4;
         border-radius: 12px;
-        padding: 15px 20px;
-        margin-bottom: 20px;
+        padding: 12px 20px;
+        margin-bottom: 12px;
 
         .delivery-item, .alert-item {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          padding: 8px 0;
+          padding: 6px 0;
           border-bottom: 1px solid #eaeaea;
 
           &:last-child {
             border-bottom: none;
             padding-bottom: 0;
+          }
+
+          .alert-info {
+            display: flex;
+            align-items: center;
           }
 
           .icon-wrapper {
@@ -736,38 +740,6 @@
           }
         }
       }
-    }
-  }
-}
-
-@media (max-width: 768px) {
-  .settings-container {
-    padding: 20px;
-
-    .settings-navigation {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 15px;
-
-      .profile-section-inline {
-        order: -1; /* Move profile section above tabs */
-        margin-bottom: 10px;
-      }
-
-      .tabs-container {
-        gap: 20px;
-        width: 100%;
-        overflow-x: auto;
-        padding-bottom: 10px;
-
-        .tab {
-          flex-shrink: 0; /* Prevent tabs from shrinking */
-        }
-      }
-    }
-
-    .tab-content {
-      padding: 0 10px;
     }
   }
 }

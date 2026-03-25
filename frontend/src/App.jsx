@@ -14,6 +14,8 @@ import TransactionsLayout from "./layouts/TransactionsLayout";
 import Transactions from "./pages/Transactions";
 import TaxEstimatorLayout from "./layouts/TaxEstimatorLayout";
 import TaxEstimator from "./pages/TaxEstimator";
+import ReportsLayout from "./layouts/ReportsLayout";
+import Reports from "./pages/Reports";
 
 
 function App() {
@@ -52,7 +54,15 @@ function App() {
             </TaxEstimatorLayout>
           }
         />
-        
+        <Route
+          path="/reports"
+          element={
+            <ReportsLayout>
+              <Reports />
+            </ReportsLayout>
+          }
+        />
+          
         <Route
           path="/settings"
           element={
