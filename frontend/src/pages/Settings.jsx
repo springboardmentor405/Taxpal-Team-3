@@ -17,6 +17,14 @@ const Settings = () => {
     role: '',
     location: ''
   });
+  const [originalProfile, setOriginalProfile] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    role: '',
+    location: ''
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -29,14 +37,16 @@ const Settings = () => {
           headers: { Authorization: `Bearer ${token}` }
         });
         const profileData = profileRes.data;
-        setProfile({
+        const initialProfile = {
           firstName: profileData.firstName || '',
           lastName: profileData.lastName || '',
           email: profileData.email || '',
           phone: profileData.phone || '',
           role: profileData.role || '',
           location: profileData.location || ''
-        });
+        };
+        setProfile(initialProfile);
+        setOriginalProfile(initialProfile);
         if (profileData.notificationSettings) {
           setNotifications(prev => ({ ...prev, ...profileData.notificationSettings }));
         }
@@ -71,10 +81,23 @@ const Settings = () => {
       await axios.put("http://localhost:5000/api/users/profile", profile, {
         headers: { Authorization: `Bearer ${token}` }
       });
+      setOriginalProfile(profile);
       toast.success("Profile saved successfully!");
     } catch (err) {
       toast.error(err.response?.data?.message || "Failed to save profile");
     }
+  };
+
+  const handleProfileDiscard = () => {
+    setProfile({
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      role: '',
+      location: ''
+    });
+    toast.info("Changes discarded and fields cleared");
   };
 
   // --- Categories State ---
@@ -239,7 +262,7 @@ const Settings = () => {
       </div>
 
       <div className="form-actions">
-        <button type="button" className="btn-cancel">Discard</button>
+        <button type="button" className="btn-cancel" onClick={handleProfileDiscard}>Discard</button>
         <button type="submit" className="btn-save">Save Profile</button>
       </div>
     </form>
@@ -439,16 +462,6 @@ const Settings = () => {
         </div>
 
         <div className="settings-navigation">
-          {activeTab === 'Profile' && (
-            <div className="profile-section-inline">
-              <div className="avatar-wrapper">
-                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Profile" className="profile-avatar" />
-                <button className="edit-avatar-btn">
-                  <Edit2 size={16} strokeWidth={2.5} />
-                </button>
-              </div>
-            </div>
-          )}
 
           <div className="tabs-container">
             {['Profile', 'Categories', 'Notifications', 'Security'].map(tab => (

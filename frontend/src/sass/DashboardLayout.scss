@@ -10,6 +10,7 @@
         flex-direction: column;
         overflow-y: hidden;
         margin-left: 270px;
+        height: 100vh;
     }
 
     .top-header {
@@ -110,5 +111,24 @@
     .page-content {
         padding: 0 2rem 2rem 2rem;
         flex: 1;
+        overflow-y: auto;
+
+        /* Custom scrollbar for better aesthetics */
+        &::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        &::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            
+            &:hover {
+                background: rgba(0, 0, 0, 0.2);
+            }
+        }
     }
 }
