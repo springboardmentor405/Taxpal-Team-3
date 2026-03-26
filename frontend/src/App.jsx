@@ -11,6 +11,10 @@ import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
 import Sidebar from "./layouts/Sidebar";
 import DashboardLayout from "./layouts/DashboardLayout";
+import TransactionsLayout from "./layouts/TransactionsLayout";
+import Transactions from "./pages/Transactions";
+import TaxEstimatorLayout from "./layouts/TaxEstimatorLayout";
+import TaxEstimator from "./pages/TaxEstimator";
 
 function App() {
   return (
@@ -30,6 +34,22 @@ function App() {
             <DashboardLayout>
               <Dashboard />
             </DashboardLayout>
+          }
+        />
+        <Route
+          path="/transactions"
+          element={
+            <TransactionsLayout>
+              <Transactions />
+            </TransactionsLayout>
+          }
+        />
+        <Route
+          path="/tax-estimator"
+          element={
+            <TaxEstimatorLayout>
+              <TaxEstimator />
+            </TaxEstimatorLayout>
           }
         />
         
