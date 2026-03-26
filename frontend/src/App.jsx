@@ -7,7 +7,6 @@ import ForgotPassword from "./pages/ForgotPassword";
 import VerifyMail from "./pages/VerifyEmail";
 import ResetPassword from "./pages/ResetPassword";
 import Dashboard from "./pages/Dashboard";
-import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
 import Sidebar from "./layouts/Sidebar";
 import DashboardLayout from "./layouts/DashboardLayout";
@@ -38,15 +37,6 @@ function App() {
           element={
             <DashboardLayout>
               <Settings />
-            </DashboardLayout>
-          }
-        />
-
-        <Route
-          path="/reports"
-          element={
-            <DashboardLayout>
-              <Reports />
             </DashboardLayout>
           }
         />
