@@ -4,34 +4,21 @@ import TaxCalculator from '../components/TaxEstimator/TaxCalculator';
 import TaxSummary from '../components/TaxEstimator/TaxSummary';
 
 const TaxEstimator = () => {
-    const [activeModal, setActiveModal] = useState(null);
-    const [currentDate, setCurrentDate] = useState('May 5-2025');
-    const [isOpen, setIsOpen] = useState(false);
 
-    const toggleDatePicker = () => {
-        setIsOpen(!isOpen);
-        console.log("Open calendar picker UI here");
-    };
-
-    const handleSave = (data) => {
-        console.log('Saved transaction:', data);
-    };
+    // 🔥 MAIN STATE
+    const [taxResult, setTaxResult] = useState(null);
 
     return (
         <div className="taxestimator-page">
-            {activeModal && (
-                <TransactionModal
-                    type={activeModal}
-                    onClose={() => setActiveModal(null)}
-                    onSave={handleSave}
-                />
-            )}
 
-            <TaxCalculator />
-            <TaxSummary />
+            {/* SEND FUNCTION */}
+            <TaxCalculator setTaxResult={setTaxResult} />
+
+            {/* RECEIVE DATA */}
+            <TaxSummary amount={taxResult?.estimatedTax || 0} />
 
         </div>
-
     );
 };
+
 export default TaxEstimator;

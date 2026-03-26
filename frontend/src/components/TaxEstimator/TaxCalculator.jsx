@@ -1,8 +1,9 @@
 import React, { useState } from "react";
+import { Country, State } from "country-state-city";
 import "../../sass/TaxCalculator.scss";
 import FormField from "../TaxEstimator/FormField";
 
-const TaxCalculator = () => {
+const TaxCalculator = ({ setTaxResult }) => {
   const [formData, setFormData] = useState({
     country: "",
     state: "",
@@ -19,6 +20,37 @@ const TaxCalculator = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const cleanAmount = (val) => Number(val.replace(/[^0-9]/g, ""));
+  const handleCalculate = async () => {
+
+    const cleanedData = {
+      ...formData,
+      income: cleanAmount(formData.income),
+      expenses: cleanAmount(formData.expenses),
+      retirement: cleanAmount(formData.retirement),
+      insurance: cleanAmount(formData.insurance),
+      homeOffice: cleanAmount(formData.homeOffice),
+    };
+
+    try {
+      const res = await fetch("http://localhost:5000/api/tax/calculate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(cleanedData)
+      });
+
+      const data = await res.json();
+
+      // 🔥 SEND TO SUMMARY
+      setTaxResult(data);
+
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
   return (
     <div className="tax-container">
       <h2>Quarterly Tax Calculator</h2>
@@ -30,7 +62,7 @@ const TaxCalculator = () => {
           name="country"
           value={formData.country}
           onChange={handleChange}
-          options={["India", "USA", "UK"]}
+          options={Country.getAllCountries().map(c => c.name)}
           placeholder="Select Country"
         />
 
@@ -39,7 +71,11 @@ const TaxCalculator = () => {
           name="state"
           value={formData.state}
           onChange={handleChange}
-          options={["Maharashtra", "Tamil Nadu", "Delhi"]}
+          options={
+            State.getStatesOfCountry(
+              Country.getAllCountries().find(c => c.name === formData.country)?.isoCode || ""
+            ).map(s => s.name)
+          }
           placeholder="Select State"
         />
 
@@ -48,7 +84,7 @@ const TaxCalculator = () => {
           name="filingStatus"
           value={formData.filingStatus}
           onChange={handleChange}
-          options={["Single", "Married"]}
+          options={["Single", "Married","Widow"]}
           placeholder="Select Status"
         />
 
@@ -110,7 +146,9 @@ const TaxCalculator = () => {
       </div>
 
       <div className="btn-container">
-        <button>Calculate Estimated Tax</button>
+        <button onClick={handleCalculate}>
+          Calculate Estimated Tax
+        </button>
       </div>
     </div>
   );

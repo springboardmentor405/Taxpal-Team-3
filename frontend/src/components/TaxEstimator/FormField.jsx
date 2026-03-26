@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Calendar, ChevronDown } from 'lucide-react'; // Using lucide-react for the icons
+import { ChevronDown } from "lucide-react";
 
 const FormField = ({
     label,
@@ -12,18 +12,25 @@ const FormField = ({
 }) => {
 
     const [open, setOpen] = useState(false);
+    const [search, setSearch] = useState("");
     const ref = useRef();
 
-    // Close dropdown on outside click
+    // 🔥 Filter options based on search
+    const filteredOptions = options.filter(opt =>
+        opt.toLowerCase().includes(search.toLowerCase())
+    );
+
+    // 🔥 Close dropdown on outside click
     useEffect(() => {
         const handleClickOutside = (e) => {
             if (ref.current && !ref.current.contains(e.target)) {
                 setOpen(false);
+                setSearch(""); // reset search
             }
         };
 
-        document.addEventListener("click", handleClickOutside);
-        return () => document.removeEventListener("click", handleClickOutside);
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
     const handleSelect = (option) => {
@@ -31,6 +38,7 @@ const FormField = ({
             target: { name, value: option }
         });
         setOpen(false);
+        setSearch("");
     };
 
     return (
@@ -38,34 +46,67 @@ const FormField = ({
 
             <label>{label}</label>
 
-            <div
-                className={`select-box ${open ? "open" : ""}`}
-                onClick={() => setOpen(!open)}
-            >
-                <span className={value ? "selected" : "placeholder"}>
-                    {value || placeholder}
-                </span>
-                <span className="arrow">    
-                    <ChevronDown size={20} className="icon-chevron" />
+            {/* ✅ DROPDOWN FIELD */}
+            {options.length > 0 ? (
+                <>
+                    <div
+                        className={`select-box ${open ? "open" : ""}`}
+                        onClick={() => setOpen(!open)}
+                    >
+                        <span className={value ? "selected" : "placeholder"}>
+                            {value || placeholder}
+                        </span>
 
-                </span>
-            </div>
+                        <span className="arrow">
+                            <ChevronDown size={20} className="icon-chevron" />
+                        </span>
+                    </div>
 
-            {open && (
-                <div className="dropdown">
-                    {options.map((opt, i) => (
-                        <div
-                            key={i}
-                            className="dropdown-item"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                handleSelect(opt);
-                            }}
-                        >
-                            {opt}
+                    {open && (
+                        <div className="dropdown">
+
+                            {/* 🔥 SEARCH INPUT */}
+                            <input
+                                type="text"
+                                placeholder="Search..."
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                className="search-box"
+                                onClick={(e) => e.stopPropagation()}
+                            />
+
+                            {/* 🔥 FILTERED OPTIONS */}
+                            {filteredOptions.length > 0 ? (
+                                filteredOptions.map((opt, i) => (
+                                    <div
+                                        key={i}
+                                        className="dropdown-item"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleSelect(opt);
+                                        }}
+                                    >
+                                        {opt}
+                                    </div>
+                                ))
+                            ) : (
+                                <div className="dropdown-item">No results</div>
+                            )}
+
                         </div>
-                    ))}
-                </div>
+                    )}
+                </>
+            ) : (
+
+                /* ✅ INPUT FIELD (FOR AMOUNTS) */
+                <input
+                    type="number"
+                    name={name}
+                    value={value}
+                    onChange={onChange}
+                    placeholder={placeholder}
+                    className="input-box"
+                />
             )}
 
         </div>

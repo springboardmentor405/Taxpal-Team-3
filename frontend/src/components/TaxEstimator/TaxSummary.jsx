@@ -2,7 +2,7 @@ import React from "react";
 import "../../sass/TaxSummary.scss";
 import { FileText } from "lucide-react";
 
-const TaxSummary = ({ amount = 3751 }) => {
+  const TaxSummary = ({ amount = 0 }) => {
   return (
     <div className="tax-summary-container">
 
