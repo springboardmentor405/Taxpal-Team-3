@@ -214,6 +214,84 @@
                     max-width: 300px;
                 }
             }
+
+            .report-preview-data {
+                width: 100%;
+                background: #fff;
+                border-radius: 10px;
+                padding: 1.5rem;
+
+                h2 {
+                    font-size: 1.2rem;
+                    font-weight: 700;
+                    margin: 0 0 1rem 0;
+                    color: #0a0a3a;
+                }
+
+                h4 {
+                    font-size: 1rem;
+                    font-weight: 600;
+                    margin: 1.25rem 0 0.5rem 0;
+                    color: #333;
+                }
+
+                .report-summary-grid {
+                    display: grid;
+                    grid-template-columns: repeat(2, 1fr);
+                    gap: 1rem;
+                    margin-bottom: 1rem;
+
+                    .summary-item {
+                        background: #F8F9FB;
+                        border-radius: 8px;
+                        padding: 0.75rem 1rem;
+                        display: flex;
+                        flex-direction: column;
+                        gap: 0.25rem;
+
+                        .summary-label {
+                            font-size: 0.85rem;
+                            color: #6B7280;
+                            font-weight: 500;
+                        }
+
+                        .summary-value {
+                            font-size: 1.1rem;
+                            font-weight: 700;
+                            color: #0a0a3a;
+
+                            &.income { color: green; }
+                            &.expense { color: red; }
+                        }
+                    }
+                }
+
+                .reports-table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin-top: 0.5rem;
+
+                    th, td {
+                        padding: 0.6rem 1rem;
+                        font-size: 0.9rem;
+                        border: 1px solid #E5E7EB;
+                        text-align: left;
+                    }
+
+                    th {
+                        background: #F3F4F6;
+                        font-weight: 600;
+                        color: #333;
+                    }
+
+                    td { color: #4B5563; }
+                }
+            }
+        }
+
+        .preview-actions button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
     }
 }
