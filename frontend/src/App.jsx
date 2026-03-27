@@ -7,14 +7,14 @@ import ForgotPassword from "./pages/ForgotPassword";
 import VerifyMail from "./pages/VerifyEmail";
 import ResetPassword from "./pages/ResetPassword";
 import Dashboard from "./pages/Dashboard";
-import Sidebar from "./layouts/Sidebar";
 import DashboardLayout from "./layouts/DashboardLayout";
+import TaxCalendar from "./pages/TaxCalendar";
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Navigate to="/login" />} />
+        <Route path="/" element={<Navigate to="/tax-calendar" />} />
 
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<Login />} />
@@ -27,6 +27,15 @@ function App() {
           element={
             <DashboardLayout>
               <Dashboard />
+            </DashboardLayout>
+          }
+        />
+
+        <Route
+          path="/tax-calendar"
+          element={
+            <DashboardLayout>
+              <TaxCalendar key="tax-calendar" />
             </DashboardLayout>
           }
         />
