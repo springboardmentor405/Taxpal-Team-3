@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import '../../sass/ExpenseBreakdownChart.scss';
 
-const data = [
+const defaultData = [
     { name: 'Marketing', value: 25 },
     { name: 'Other', value: 25 },
     { name: 'Rent', value: 20 },
@@ -25,7 +25,12 @@ const CustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, inde
 };
 
 
-const ExpenseBreakdownChart = () => {
+const ExpenseBreakdownChart = ({ data }) => {
+    const chartData = useMemo(
+        () => (data === undefined ? defaultData : (Array.isArray(data) ? data : defaultData)),
+        [data]
+    );
+
     return (
         <div className="chart-card expense-breakdown-chart">
             <div className="chart-header">
@@ -35,7 +40,7 @@ const ExpenseBreakdownChart = () => {
                 <ResponsiveContainer width="100%" height={300}>
                     <PieChart>
                         <Pie
-                            data={data}
+                            data={chartData}
                             cx="50%"
                             cy="50%"
                             outerRadius={100}
@@ -46,7 +51,7 @@ const ExpenseBreakdownChart = () => {
                             labelLine={true}
                             label={CustomLabel}
                         >
-                            {data.map((entry, index) => (
+                            {chartData.map((entry, index) => (
                                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} stroke="none" />
                             ))}
                         </Pie>

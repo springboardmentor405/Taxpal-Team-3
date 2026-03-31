@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import '../../sass/IncomeExpenseChart.scss';
 
-const data = [
+const defaultData = [
     { name: 'Jan', Income: 7500, Expenses: 2100 },
     { name: 'Feb', Income: 4500, Expenses: 7000 },
     { name: 'Mar', Income: 6800, Expenses: 4900 },
@@ -15,12 +15,24 @@ const data = [
     { name: 'Oct', Income: 700, Expenses: 400 },
 ];
 
-const IncomeExpenseChart = () => {
+const IncomeExpenseChart = ({ data }) => {
+    const [months, setMonths] = useState(6);
+
+    const chartData = useMemo(() => {
+        // If `data` is provided, even if it's empty, show empty/zero chart instead of fallback.
+        const src = data === undefined ? defaultData : (Array.isArray(data) ? data : defaultData);
+        return src.slice(Math.max(0, src.length - months));
+    }, [data, months]);
+
     return (
         <div className="chart-card income-expense-chart">
             <div className="chart-header">
                 <h3>Income vs Expenses</h3>
-                <select className="period-select" defaultValue="6">
+                <select
+                    className="period-select"
+                    value={months}
+                    onChange={(e) => setMonths(Number(e.target.value))}
+                >
                     <option value="6">Last 6 months</option>
                     <option value="12">Last 12 months</option>
                 </select>
@@ -28,7 +40,7 @@ const IncomeExpenseChart = () => {
             <div className="chart-container">
                 <ResponsiveContainer width="100%" height={300}>
                     <BarChart
-                        data={data}
+                        data={chartData}
                         margin={{ top: 10, right: 0, left: 0, bottom: 0 }}
                         barGap={0}
                     >
