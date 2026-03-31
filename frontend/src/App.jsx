@@ -15,6 +15,7 @@ import TransactionsLayout from "./layouts/TransactionsLayout";
 import Transactions from "./pages/Transactions";
 import TaxEstimatorLayout from "./layouts/TaxEstimatorLayout";
 import TaxEstimator from "./pages/TaxEstimator";
+import Budget from "./pages/Budget";
 
 function App() {
   return (
@@ -43,6 +44,10 @@ function App() {
               <Transactions />
             </TransactionsLayout>
           }
+        />
+        <Route
+          path="/budgets"
+          element={<Budget />}
         />
         <Route
           path="/tax-estimator"
