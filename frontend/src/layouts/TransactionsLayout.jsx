@@ -6,9 +6,10 @@ import { Search, Bell } from 'lucide-react';
 import '../sass/TransactionsLayout.scss';
 
 const TransactionsLayout = ({ children }) => {
-    const [currentDate, setCurrentDate] = useState('Oct 1-2023');
+    const [currentDate, setCurrentDate] = useState('Oct 2026');
     const [isOpen, setIsOpen] = useState(false);
     const location = useLocation();
+    const user = JSON.parse(localStorage.getItem("user"));
 
     const toggleDatePicker = () => {
         setIsOpen(!isOpen);
@@ -39,11 +40,13 @@ const TransactionsLayout = ({ children }) => {
                         </button>
                         <div className="user-profile">
                             <div className="user-info">
-                                <span className="user-name">Alex Morgan</span>
-                                <span className="user-role">Freelancer</span>
+                                <span className="user-name">{user?.name || "User"}</span>
+                                <span className="user-role">{user?.email || "No Email"}</span>
                             </div>
                             <div className="avatar">
-                                <div className="avatar-fallback">AM</div>
+                                <div className="avatar-fallback">
+                                    {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
+                                </div>
                             </div>
                         </div>
                     </div>

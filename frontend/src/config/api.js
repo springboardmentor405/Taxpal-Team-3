@@ -9,3 +9,17 @@ const API = axios.create({
 
 export const signUp = (username, email, password) =>
   API.post("/signup", { username, email, password });
+
+export const getTransactions = (token) =>
+  API.get("/transactions", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+export const addTransaction = (data, token) =>
+  API.post("/transactions", data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });

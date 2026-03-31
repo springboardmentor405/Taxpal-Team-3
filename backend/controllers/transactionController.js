@@ -1,86 +1,46 @@
-import Transaction from '../models/Transaction.js';
+import Transaction from "../models/Transaction.js";
 
+// ➕ Add Transaction
+export const addTransaction = async (req, res) => {
+    try {
+        const { type, category, amount, description, date } = req.body;
 
-export const createTransaction = async (req, res) => {
-  try {
-    const { title, amount, type, category, date, note } = req.body;
-    const transaction = new Transaction({
-      user: req.user.id,
-      title,
-      amount,
-      type,
-      category,
-      date: date || Date.now(),
-      note,
-    });
-    await transaction.save();
-    res.status(201).json(transaction);
-  } catch (err) {
-    console.error('createTransaction error:', err);
-    res.status(500).json({ message: 'Server error' });
-  }
+        const transaction = await Transaction.create({
+            user: req.user._id,
+            type,
+            category,
+            amount,
+            description,
+            date,
+        });
+
+        await transaction.save();
+
+        res.status(201).json(transaction);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 };
 
-
+// 📥 Get All Transactions
 export const getTransactions = async (req, res) => {
-  try {
-    const { type, category, startDate, endDate } = req.query;
-    const filter = { user: req.user.id };
+    try {
+        const transactions = await Transaction.find({
+            user: req.user.id,
+        }).sort({ date: -1 });
 
-    if (type) filter.type = type;
-    if (category) filter.category = category;
-    if (startDate || endDate) {
-      filter.date = {};
-      if (startDate) filter.date.$gte = new Date(startDate);
-      if (endDate) filter.date.$lte = new Date(endDate);
+        res.json(transactions);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
-
-    const transactions = await Transaction.find(filter).sort({ date: -1 });
-    res.json(transactions);
-  } catch (err) {
-    console.error('getTransactions error:', err);
-    res.status(500).json({ message: 'Server error' });
-  }
 };
 
-// Get transaction summary metrics
-export const getTransactionMetrics = async (req, res) => {
-  try {
-    const transactions = await Transaction.find({ user: req.user.id });
-
-    const totalIncome = transactions
-      .filter((t) => t.type === 'Income')
-      .reduce((sum, t) => sum + t.amount, 0);
-    const totalExpense = transactions
-      .filter((t) => t.type === 'Expense')
-      .reduce((sum, t) => sum + t.amount, 0);
-    const netBalance = totalIncome - totalExpense;
-
-    res.json({
-      totalIncome,
-      totalExpense,
-      netBalance,
-      totalTransactions: transactions.length,
-    });
-  } catch (err) {
-    console.error('getTransactionMetrics error:', err);
-    res.status(500).json({ message: 'Server error' });
-  }
-};
-
-// Delete a transaction
+// ❌ Delete Transaction
 export const deleteTransaction = async (req, res) => {
-  try {
-    const transaction = await Transaction.findOneAndDelete({
-      _id: req.params.id,
-      user: req.user.id,
-    });
-    if (!transaction) {
-      return res.status(404).json({ message: 'Transaction not found' });
+    try {
+        await Transaction.findByIdAndDelete(req.params.id);
+        res.json({ message: "Transaction deleted" });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
-    res.json({ message: 'Transaction deleted' });
-  } catch (err) {
-    console.error('deleteTransaction error:', err);
-    res.status(500).json({ message: 'Server error' });
-  }
 };

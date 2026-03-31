@@ -2,23 +2,20 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
-import authRoutes from "./routes/authRoutes.js";
-import userRoutes from "./routes/userRoutes.js";
-import categoryRoutes from "./routes/categoryRoutes.js";
 import transactionRoutes from "./routes/transactionRoutes.js";
-import reportRoutes from "./routes/reportRoutes.js";
-
+import authRoutes from "./routes/authRoutes.js";
+import categoryRoutes from "./routes/categoryRoutes.js";
 dotenv.config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use("/api/auth", authRoutes);
-app.use("/api/users", userRoutes);
+app.use("/api/auth", authRoutes); 
+
 app.use("/api/categories", categoryRoutes);
+
 app.use("/api/transactions", transactionRoutes);
-app.use("/api/reports", reportRoutes);
 
 mongoose
   .connect(process.env.MONGO_URI)

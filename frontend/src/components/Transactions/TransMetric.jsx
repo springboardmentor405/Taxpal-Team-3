@@ -37,7 +37,7 @@ const TransMetric = ({ title, amount, percentage, period, type }) => {
             </span>
 
             <div className={`metric-percentage ${statusClass}`}>
-                    
+
                 {IconComponent && (
                     <span className="icon">
                         <IconComponent />
@@ -45,11 +45,11 @@ const TransMetric = ({ title, amount, percentage, period, type }) => {
                 )}
 
                 {/* TEXT */}
-                {type === 'positive' && `${percentage}% vs ${period}`}
-                {type === 'negative' && `${percentage}% vs ${period}`}
+                {type === 'positive' && percentage !== undefined && `${percentage}% vs ${period}`}
+                {type === 'negative' && percentage !== undefined && `${percentage}% vs ${period}`}
                 {type === 'success' && `Positive`}
-                {type === 'plain' && ` This month`}
-                
+                {type === 'plain' && `This month`}
+
             </div>
         </div>
     );

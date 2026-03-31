@@ -1,71 +1,104 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDown } from 'lucide-react';
 
-const SelectTrigger = ({ label, icon: Icon, onClick, variant = 'default' }) => {
+const SelectTrigger = ({ label, options = [], onSelect, variant = 'default' }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const ref = useRef();
+
+  // Close when clicked outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (ref.current && !ref.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleOptionClick = (option) => {
+    if (onSelect) onSelect(option);
+    setIsOpen(false);
+  };
+
   return (
     <>
-      <style>
-        {
-          `
+      <style>{`
         .select-trigger {
-    display: inline-flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 8px 14px;
-    min-width: 100px;
-    height: 25px;
-    border-radius: 8px;
-    border: 0.2px solid #9e9e9e;
-
-    cursor: pointer;
-    transition: all 0.2s ease;
-    user-select: none;
-
-    &.default {
-        background-color: #ebf0f3;
-        border: 0.2px solid #cfcfcf;
-        min-width: 120px;
-    }
-
-    &.grey {
-        background-color: #ebf0f3; 
-        border: 0.2px solid #cfcfcf;
-    }
-
-    .select-content {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    .chevron-icon {
-        stroke-width: 3px;
-        color: #000000d5;
-    }
-
-    &:hover {
-        filter: brightness(0.95);
-    }
-}
-
-@media (max-width: 600px) {
-    .select-trigger {
-        padding: 6px 10px;
-        height: 22px;
-
-        &.default {
-            min-width: 100px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 6px 12px;
+          border-radius: 8px;
+          cursor: pointer;
+          min-width: 130px;
+          background-color: #ffffff;
+          border: 0.5px solid #cfcfcf;
+          font-size: 13px;
+          transition: all 0.2s ease;
         }
-    }
-}`
+
+        .select-trigger.grey {
+          background-color: #ebf0f3;
         }
-      </style>
-      <div className={`select-trigger ${variant}`} onClick={onClick}>
-        <div className="select-content">
-          {Icon && <Icon size={20} className="left-icon" />}
-          <span className="select-label">{label}</span>
+
+        .select-trigger:hover {
+          filter: brightness(0.95);
+        }
+
+        .select-content {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+
+        .select-options {
+          position: absolute;
+          top: 105%;
+          left: 0;
+          width: 100%;
+          background: #fff;
+          border: 1px solid #cfcfcf;
+          border-radius: 8px;
+          margin-top: 4px;
+          z-index: 100;
+          box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .select-option {
+          padding: 8px 12px;
+          cursor: pointer;
+        }
+
+        .select-option:hover {
+          background: #f0f0f0;
+        }
+      `}</style>
+
+      <div ref={ref} style={{ position: "relative" }}>
+        <div
+          className={`select-trigger ${variant}`}
+          onClick={() => setIsOpen(prev => !prev)}
+        >
+          <div className="select-content">
+            <span>{label}</span>
+          </div>
+          <ChevronDown size={18} />
         </div>
-        <ChevronDown size={22} className="chevron-icon" />
+
+        {isOpen && options.length > 0 && (
+          <div className="select-options">
+            {options.map((opt) => (
+              <div
+                key={opt}
+                className="select-option"
+                onClick={() => handleOptionClick(opt)}
+              >
+                {opt}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </>
   );
