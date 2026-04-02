@@ -2,36 +2,21 @@ import React, { useState } from 'react';
 import '../sass/TaxEstimator.scss';
 import TaxCalculator from '../components/TaxEstimator/TaxCalculator';
 import TaxSummary from '../components/TaxEstimator/TaxSummary';
+import UserProfileHeader from '../components/Common/UserProfileHeader';
 
 const TaxEstimator = () => {
-    const [activeModal, setActiveModal] = useState(null);
-    const [currentDate, setCurrentDate] = useState('May 5-2025');
-    const [isOpen, setIsOpen] = useState(false);
-
-    const toggleDatePicker = () => {
-        setIsOpen(!isOpen);
-        console.log("Open calendar picker UI here");
-    };
-
-    const handleSave = (data) => {
-        console.log('Saved transaction:', data);
-    };
+    const [estimatedTax, setEstimatedTax] = useState(null);
 
     return (
         <div className="taxestimator-page">
-            {activeModal && (
-                <TransactionModal
-                    type={activeModal}
-                    onClose={() => setActiveModal(null)}
-                    onSave={handleSave}
-                />
-            )}
-
-            <TaxCalculator />
-            <TaxSummary />
-
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                <h1 style={{ fontSize: '1.5rem', fontWeight: 700, margin: 0, color: '#0a0a38' }}>Tax Estimator</h1>
+                <UserProfileHeader />
+            </div>
+            <TaxCalculator onResult={(tax) => setEstimatedTax(tax)} />
+            <TaxSummary amount={estimatedTax !== null ? Math.round(estimatedTax) : 0} />
         </div>
-
     );
 };
+
 export default TaxEstimator;

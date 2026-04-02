@@ -4,9 +4,14 @@ import BudgetCards from "../components/Budget/BudgetCards";
 import BudgetTable from "../components/Budget/BudgetTable";
 import ExpenseBreakdown from "../components/Budget/ExpenseBreakdown";
 import CreateBudgetModal from "../components/Budget/CreateBudgetModal";
+import UserProfileHeader from "../components/Common/UserProfileHeader";
 import "../sass/Budget.scss";
-import { Search, Bell } from 'lucide-react';
 
+const API_BASE = (() => {
+  const raw = import.meta.env.VITE_API_URL || "http://localhost:5000";
+  const base = String(raw).replace(/\/+$/, "");
+  return base.endsWith("/api") ? base : `${base}/api`;
+})();
 const getCurrentMonthValue = () => {
   const now = new Date();
   const y = now.getFullYear();
@@ -37,7 +42,7 @@ const Budget = () => {
   };
 
   const loadBudgets = useCallback((month) => {
-    fetch(`http://localhost:5000/api/budgets?month=${month}`)
+    fetch(`${API_BASE}/budgets?month=${month}`)
       .then(res => res.json())
       .then(data => {
         if (data.success) {
@@ -90,7 +95,7 @@ const Budget = () => {
   const handleCreateBudget = async (newBudget) => {
     try {
       const month = newBudget.month || selectedMonth;
-      const response = await fetch('http://localhost:5000/api/budgets', {
+      const response = await fetch(`${API_BASE}/budgets`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -140,24 +145,7 @@ const Budget = () => {
                   }}
                 />
               </div>
-
-              <div className="topbar-search-wrap">
-                <Search size={14} color="#999" />
-                <input
-                  placeholder="Global Search"
-                  value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
-                />
-              </div>
-
-              <Bell size={20} color="#666" />
-              <div className="topbar-user">
-                <div>
-                  <p className="user-name">Alex Morgan</p>
-                  <p className="user-role">Freelancer</p>
-                </div>
-                <div className="user-avatar">AM</div>
-              </div>
+              <UserProfileHeader />
             </div>
           </div>
           <div className="topbar-row2">

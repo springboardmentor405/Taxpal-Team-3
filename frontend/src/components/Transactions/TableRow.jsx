@@ -8,7 +8,9 @@ const TableRow = ({
   categoryColor,
   type,
   amount,
-  note
+  note,
+  id,
+  onDelete
 }) => {
 
   return (
@@ -182,8 +184,7 @@ const TableRow = ({
         <span className="note">{note}</span>
 
         <div className="actions">
-          <button>-</button>
-          <button>🗑</button>
+          <button onClick={() => onDelete(id)}>🗑</button>
         </div>
 
       </div>

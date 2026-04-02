@@ -17,7 +17,7 @@ const TaxSummary = ({ amount = 3751 }) => {
         <h2 className="heading">Estimated Quarterly Tax</h2>
 
         <div className="amount">
-          $ {amount.toLocaleString()}
+          ₹ {amount.toLocaleString('en-IN')}
         </div>
 
         <p className="description">

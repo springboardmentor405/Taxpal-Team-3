@@ -1,5 +1,4 @@
-import React from 'react';
-import Sidebar from '../components/Budget/Sidebar';
+import Sidebar from './Sidebar';
 
 const BudgetLayout = ({ children }) => {
     return (
@@ -20,7 +19,7 @@ const BudgetLayout = ({ children }) => {
                 minHeight: 0
             }}>
                 <div style={{ 
-                    padding: '1.5rem 2rem', 
+                    padding: '1.5rem 5rem', 
                     flex: 1,
                     display: 'flex',
                     flexDirection: 'column',

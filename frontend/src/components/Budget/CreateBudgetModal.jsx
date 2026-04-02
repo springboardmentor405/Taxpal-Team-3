@@ -53,7 +53,7 @@ const handleSubmit = () => {
               <label>Budget Amount</label>
               <input
                 type="number"
-                placeholder="$0.00"
+                placeholder="₹0.00"
                 value={form.budget}
                 onChange={(e) => setForm({ ...form, budget: e.target.value })}
               />

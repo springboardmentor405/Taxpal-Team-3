@@ -1,0 +1,79 @@
+.user-profile {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 1rem;
+    cursor: default;
+
+    .user-info {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        line-height: 1.2;
+
+        .user-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 0.95rem;
+            margin-bottom: 2px;
+        }
+
+        .user-role {
+            font-size: 0.8rem;
+            color: #666;
+            text-transform: none;
+        }
+    }
+
+    .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        overflow: hidden;
+        background-color: #0a0a38;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-shrink: 0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+        .avatar-fallback {
+            color: #fff;
+            font-weight: 500;
+            font-size: 1rem;
+        }
+    }
+}
+
+// Ensure it remains horizontal even in flex containers that might default to column
+.user-profile-horizontal {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+}
+
+.user-profile-sidebar {
+    gap: 15px !important;
+    padding-left: 10px;
+
+    .user-info {
+        align-items: flex-start !important;
+        
+        .user-name {
+            color: #fff !important;
+            font-size: 16px !important;
+            font-weight: 700 !important;
+        }
+
+        .user-role {
+            color: rgba(255, 255, 255, 0.7) !important;
+            font-size: 14px !important;
+        }
+    }
+
+    .avatar {
+        background-color: #265b6e !important;
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+}

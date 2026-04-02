@@ -74,7 +74,7 @@ const ExpenseBreakdown = ({ budgets, totalSpent }) => {
           <circle cx={cx} cy={cy} r={inner - 2} fill="white" />
           <text x={cx} y={cy - 6} textAnchor="middle" fontSize="11" fill="#6b7280">Total Spent</text>
           <text x={cx} y={cy + 10} textAnchor="middle" fontSize="13" fontWeight="bold" fill="#111827">
-            ${totalSpent.toLocaleString()}
+            ₹{totalSpent.toLocaleString('en-IN')}
           </text>
         </svg>
       </div>

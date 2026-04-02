@@ -7,7 +7,7 @@ const TransactionModal = ({ type, onClose, onSave }) => {
     const title = isIncome ? 'Record New Income' : 'Record New Expense';
     const subtitle = isIncome
         ? 'Add details about your income to track your finance better'
-        : 'Add details about your income to track your spending better';
+        : 'Add details about your expense to track your spending better';
     const sectionTitle = isIncome ? 'Add Income' : 'Add Expense';
 
     // Build YYYY-MM-DD for native date input compatibility
@@ -103,7 +103,7 @@ const TransactionModal = ({ type, onClose, onSave }) => {
                             <div className="form-group">
                                 <label htmlFor="tm-amount">Amount</label>
                                 <div className="tm-amount-wrapper">
-                                    <span className="amount-prefix">$</span>
+                                    <span className="amount-prefix">₹</span>
                                     <input
                                         id="tm-amount"
                                         type="number"

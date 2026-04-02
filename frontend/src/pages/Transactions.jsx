@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import '../sass/Transactions.scss';
-import { getTransactions, addTransaction } from '../config/api';
+import { getTransactions, addTransaction, deleteTransaction } from '../config/api';
 
 import TransMetric from '../components/Transactions/TransMetric';
 import DatePickerTrigger from '../components/Transactions/DatePickerTrigger';
 import { Search } from 'lucide-react';
 import SelectTrigger from '../components/Transactions/SelectTrigger';
-import ExportButton from '../components/Transactions/Exportbtn';
 import TransactionTable from '../components/Transactions/TransactionTable';
 import TransactionModal from '../components/Transactions/TransactionModal';
 
@@ -65,6 +64,17 @@ const Transactions = () => {
 
         } catch (error) {
             console.error("SAVE ERROR:", error);
+        }
+    };
+    // ✅ DELETE DATA
+    const handleDelete = async (id) => {
+        if (!window.confirm("Are you sure you want to delete this transaction?")) return;
+        try {
+            const token = localStorage.getItem("token");
+            await deleteTransaction(id, token);
+            await fetchTransactions(); // 🔥 REFRESH UI
+        } catch (error) {
+            console.error("DELETE ERROR:", error);
         }
     };
 
@@ -180,7 +190,7 @@ const Transactions = () => {
 
                 <TransMetric
                     title="Total Income"
-                    amount={`₹ ${totalIncome}`}
+                    amount={`₹ ${totalIncome.toLocaleString('en-IN')}`}
                     percentage={incomeStats.percentage}
                     period="vs last month"
                     type={incomeStats.isPositive ? "positive" : "negative"}
@@ -188,25 +198,18 @@ const Transactions = () => {
 
                 <TransMetric
                     title="Total Expense"
-                    amount={`₹ ${totalExpense}`}
+                    amount={`₹ ${totalExpense.toLocaleString('en-IN')}`}
                     percentage={expenseStats.percentage}
                     period="vs last month"
                     type={expenseStats.isPositive ? "negative" : "positive"}
                 />
-                <TransMetric title="Net Balance" amount={`₹ ${netBalance}`} type="success" />
+                <TransMetric title="Net Balance" amount={`₹ ${netBalance.toLocaleString('en-IN')}`} type="success" />
                 <TransMetric title="Total Transactions" amount={filteredTransactions.length} type="plain" />
             </div>
 
             {/* FILTER */}
             <div className="top-header">
-                <div className="search-bar">
-                    <Search size={20} />
-                    <input
-                        placeholder="Search..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                    />
-                </div>
+                <div style={{ flex: 1 }}></div>
 
                 <div className="header-actions">
 
@@ -222,15 +225,6 @@ const Transactions = () => {
                         onSelect={setSelectedType}
                         variant="grey"
                     />
-                    <DatePickerTrigger
-                        date={currentDate}
-                        onClick={toggleDatePicker}
-                        onChange={(date) => setSelectedMonth(date)}
-                    />
-
-
-                    <ExportButton data={filteredTransactions} />
-
                 </div>
             </div>
 
@@ -240,6 +234,7 @@ const Transactions = () => {
                 currentPage={currentPage}
                 totalPages={Math.ceil(filteredTransactions.length / perPage)}
                 onPageChange={setCurrentPage}
+                onDelete={handleDelete}
             />
 
         </div>

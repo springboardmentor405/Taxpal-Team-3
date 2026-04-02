@@ -296,7 +296,6 @@ const Settings = () => {
                 <span className="category-name">{cat.name}</span>
               </div>
               <div className="category-actions">
-                <Edit2 size={16} />
                 <Trash2 size={16} color="#ef4444" onClick={() => handleDeleteCategory(cat._id || cat.id, categorySubTab)} />
               </div>
             </div>

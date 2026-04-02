@@ -55,7 +55,9 @@ const ExpenseBreakdownChart = ({ data }) => {
                                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} stroke="none" />
                             ))}
                         </Pie>
-                        <Tooltip />
+                        <Tooltip 
+                            formatter={(value) => `₹${Number(value).toLocaleString('en-IN')}`}
+                        />
                         <Legend verticalAlign="bottom" height={36} iconType="circle" />
                     </PieChart>
                 </ResponsiveContainer>

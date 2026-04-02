@@ -47,7 +47,10 @@ const IncomeExpenseChart = ({ data }) => {
                         <CartesianGrid strokeDasharray="3 3" vertical={true} horizontal={true} stroke="#e0e0e0" />
                         <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#666', fontSize: 12 }} />
                         <YAxis axisLine={false} tickLine={false} tick={{ fill: '#666', fontSize: 12 }} />
-                        <Tooltip cursor={{ fill: '#f5f5f5' }} />
+                        <Tooltip 
+                            cursor={{ fill: '#f5f5f5' }} 
+                            formatter={(value) => `₹${Number(value).toLocaleString('en-IN')}`}
+                        />
                         <Legend verticalAlign="bottom" align="center" iconType="circle" wrapperStyle={{ paddingTop: "10px" }} />
                         <Bar dataKey="Expenses" fill="#0A0A3A" radius={[2, 2, 0, 0]} barSize={12} />
                         <Bar dataKey="Income" fill="#42D2CE" radius={[2, 2, 0, 0]} barSize={12} />

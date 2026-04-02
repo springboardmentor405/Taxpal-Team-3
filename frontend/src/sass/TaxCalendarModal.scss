@@ -1,0 +1,165 @@
+.tax-calendar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.tax-calendar-modal {
+    background: #fff;
+    width: 520px;
+    max-width: 95vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: -4px 0 30px rgba(0, 0, 0, 0.15);
+    animation: slideIn 0.25s ease;
+
+    @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to   { transform: translateX(0);    opacity: 1; }
+    }
+}
+
+.tcm-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 1.75rem 1.75rem 1.25rem;
+    border-bottom: 1px solid #e9ecef;
+
+    h2 {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #1a1a2e;
+        margin: 0 0 0.25rem;
+    }
+
+    p {
+        font-size: 0.8rem;
+        color: #6b7280;
+        margin: 0;
+    }
+}
+
+.tcm-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #6b7280;
+    padding: 0.25rem;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    transition: background 0.2s, color 0.2s;
+
+    &:hover {
+        background: #f3f4f6;
+        color: #1a1a2e;
+    }
+}
+
+.tcm-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.25rem 1.75rem 2rem;
+}
+
+.tcm-loading, .tcm-error {
+    text-align: center;
+    color: #6b7280;
+    margin-top: 2rem;
+    font-size: 0.9rem;
+}
+
+.tcm-error { color: #ef4444; }
+
+.tcm-month-group {
+    margin-bottom: 2rem;
+}
+
+.tcm-month-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin: 0 0 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.tcm-deadline-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.875rem;
+    padding: 1rem 1rem;
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
+    margin-bottom: 0.75rem;
+    background: #fafafa;
+    transition: box-shadow 0.2s;
+
+    &:hover {
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        background: #fff;
+    }
+}
+
+.tcm-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: #eff6ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #2563eb;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.tcm-info {
+    flex: 1;
+
+    .tcm-title {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: #1a1a2e;
+        margin: 0 0 0.2rem;
+    }
+
+    .tcm-date {
+        font-size: 0.78rem;
+        color: #4b5563;
+        margin: 0 0 0.25rem;
+    }
+
+    .tcm-desc {
+        font-size: 0.76rem;
+        color: #9ca3af;
+        margin: 0;
+        line-height: 1.4;
+    }
+}
+
+.tcm-badge {
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.25rem 0.65rem;
+    border-radius: 20px;
+    text-transform: capitalize;
+    flex-shrink: 0;
+    margin-top: 2px;
+
+    &--reminder {
+        background: #dbeafe;
+        color: #1d4ed8;
+    }
+
+    &--payment {
+        background: #fef3c7;
+        color: #d97706;
+    }
+}

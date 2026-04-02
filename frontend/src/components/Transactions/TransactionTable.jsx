@@ -8,7 +8,8 @@ const TransactionTable = ({
   data = [],
   currentPage,
   totalPages,
-  onPageChange
+  onPageChange,
+  onDelete
 }) => {
 
   return (
@@ -39,14 +40,15 @@ const TransactionTable = ({
             data.map((item) => (
               <TableRow
                 key={item._id}
+                id={item._id}
                 date={new Date(item.date).toLocaleDateString()}
                 title={item.description || "Untitled"}
                 subtitle={item.category}
                 category={item.category}
                 categoryColor={item.type === "Income" ? "blue" : "red"}
                 type={item.type}
-                amount={`${item.type === "Income" ? "+" : "-"} ₹ ${item.amount}`}
-                note={item.description || ""}
+                amount={`${item.type === "Income" ? "+" : "-"} ₹ ${Number(item.amount).toLocaleString('en-IN')}`}
+                onDelete={onDelete}
               />
             ))
             

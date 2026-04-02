@@ -45,11 +45,11 @@ export const getReport = async (req, res) => {
     }).sort({ date: -1 });
 
     const totalIncome = transactions
-      .filter((t) => t.type === 'Income')
+      .filter((t) => t.type && t.type.toLowerCase() === 'income')
       .reduce((sum, t) => sum + t.amount, 0);
 
     const totalExpense = transactions
-      .filter((t) => t.type === 'Expense')
+      .filter((t) => t.type && t.type.toLowerCase() === 'expense')
       .reduce((sum, t) => sum + t.amount, 0);
 
     const netBalance = totalIncome - totalExpense;
@@ -57,14 +57,14 @@ export const getReport = async (req, res) => {
     
     const expenseByCategory = {};
     transactions
-      .filter((t) => t.type === 'Expense')
+      .filter((t) => t.type && t.type.toLowerCase() === 'expense')
       .forEach((t) => {
         expenseByCategory[t.category] = (expenseByCategory[t.category] || 0) + t.amount;
       });
 
     const incomeByCategory = {};
     transactions
-      .filter((t) => t.type === 'Income')
+      .filter((t) => t.type && t.type.toLowerCase() === 'income')
       .forEach((t) => {
         incomeByCategory[t.category] = (incomeByCategory[t.category] || 0) + t.amount;
       });

@@ -17,7 +17,7 @@ const MetricCard = ({ title, amount, percentage, period, isPositive, chartData }
                 </div>
             </div>
             <div className="metric-amount">
-                {title.includes('Rate') ? '' : '$'}
+                {title.includes('Rate') ? '' : '₹'}
                 {amount}
                 {title.includes('Rate') ? '%' : ''}
             </div>

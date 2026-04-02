@@ -23,3 +23,10 @@ export const addTransaction = (data, token) =>
       Authorization: `Bearer ${token}`,
     },
   });
+
+export const deleteTransaction = (id, token) =>
+  API.delete(`/transactions/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });

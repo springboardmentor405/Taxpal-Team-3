@@ -41,7 +41,7 @@ const Dashboard = () => {
   };
 
   const fmtMoney = (n) =>
-    Number(n || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    Number(n || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   const pctChange = (current, previous) => {
     const c = Number(current || 0);
@@ -66,8 +66,8 @@ const Dashboard = () => {
       const key = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}`;
       const bucket = buckets.get(key);
       if (!bucket) return;
-      if (t.type === 'Income') bucket.income += Number(t.amount || 0);
-      if (t.type === 'Expense') bucket.expense += Number(t.amount || 0);
+      if (t.type && t.type.toLowerCase() === 'income') bucket.income += Number(t.amount || 0);
+      if (t.type && t.type.toLowerCase() === 'expense') bucket.expense += Number(t.amount || 0);
     });
 
     const monthLabel = (d) =>
@@ -90,31 +90,9 @@ const Dashboard = () => {
         return;
       }
 
-      let curReport = null;
-      let lastReport = null;
       let txRes = null;
       let profileRes = null;
       let loadedAny = false;
-
-      try {
-        curReport = await axios.get(`${API_URL}/reports`, {
-          ...getAuthHeaders(),
-          params: { period: 'Current Month' },
-        });
-        if (curReport?.data) loadedAny = true;
-      } catch (e) {
-        console.error('Dashboard current report failed:', e);
-      }
-
-      try {
-        lastReport = await axios.get(`${API_URL}/reports`, {
-          ...getAuthHeaders(),
-          params: { period: 'Last Month' },
-        });
-        if (lastReport?.data) loadedAny = true;
-      } catch (e) {
-        console.error('Dashboard last report failed:', e);
-      }
 
       try {
         txRes = await axios.get(`${API_URL}/transactions`, {
@@ -136,19 +114,58 @@ const Dashboard = () => {
         // Optional; don't block dashboard if profile endpoint fails.
       }
 
-      if (curReport?.data?.summary) setCurrentSummary(curReport.data.summary);
-      if (lastReport?.data?.summary) setLastSummary(lastReport.data.summary);
+      if (Array.isArray(txRes?.data)) {
+        const txs = txRes.data;
+        const now = new Date();
+        const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+        const currentMonthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+        const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999);
 
-      if (curReport?.data?.expenseByCategory) {
-        const expenseByCategory = curReport.data.expenseByCategory || {};
-        const pie = Object.entries(expenseByCategory)
-          .map(([k, v]) => ({ name: k, value: Number(v || 0) }))
+        let curIncome = 0; let curExpense = 0; let curTxCount = 0;
+        let lastIncome = 0; let lastExpense = 0; let lastTxCount = 0;
+        const expensePie = {};
+
+        txs.forEach((t) => {
+          const d = new Date(t.date);
+          const type = t.type ? t.type.toLowerCase() : '';
+          const amt = Number(t.amount || 0);
+
+          if (d >= currentMonthStart && d <= currentMonthEnd) {
+            curTxCount++;
+            if (type === 'income') curIncome += amt;
+            if (type === 'expense') {
+              curExpense += amt;
+              expensePie[t.category] = (expensePie[t.category] || 0) + amt;
+            }
+          } else if (d >= lastMonthStart && d <= lastMonthEnd) {
+            lastTxCount++;
+            if (type === 'income') lastIncome += amt;
+            if (type === 'expense') lastExpense += amt;
+          }
+        });
+
+        setCurrentSummary({
+          totalIncome: curIncome,
+          totalExpense: curExpense,
+          netBalance: curIncome - curExpense,
+          totalTransactions: curTxCount,
+        });
+
+        setLastSummary({
+          totalIncome: lastIncome,
+          totalExpense: lastExpense,
+          netBalance: lastIncome - lastExpense,
+          totalTransactions: lastTxCount,
+        });
+
+        const pie = Object.entries(expensePie)
+          .map(([k, v]) => ({ name: k || 'Other', value: v }))
           .filter((x) => x.value > 0);
         setExpenseBreakdownData(pie);
-      }
 
-      const tx = Array.isArray(txRes?.data) ? txRes.data : [];
-      if (Array.isArray(txRes?.data)) setBarData(buildMonthlySeries(tx, 6));
+        setBarData(buildMonthlySeries(txs, 6));
+      }
 
       const username = profileRes?.data?.name || profileRes?.data?.username;
       if (username) setName(username);
@@ -173,9 +190,9 @@ const Dashboard = () => {
   const handleSave = async (form) => {
     try {
       const payload = {
-        title: form.description,
+        description: form.description,
         amount: parseFloat(form.amount),
-        type: activeModal === 'income' ? 'Income' : 'Expense',
+        type: activeModal === 'income' ? 'income' : 'expense',
         category: form.category || 'Other',
         date: form.date,
         note: form.notes,
@@ -219,42 +236,6 @@ const Dashboard = () => {
           <p>Here's what's happening with your business today.</p>
         </div>
         <div className="welcome-actions">
-          <button
-            className="btn-secondary"
-            onClick={async () => {
-              try {
-                const res = await axios.get(`${API_URL}/reports`, {
-                  ...getAuthHeaders(),
-                  params: { period: 'Current Month', reportType: 'Income Statement' },
-                });
-                const reportData = res.data;
-                const fmt = (n) => `$${Number(n).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
-                const lines = [
-                  `Report: ${reportData.reportType}`,
-                  `Period: ${reportData.period}`,
-                  ``,
-                  `SUMMARY`,
-                  `Total Income: ${fmt(reportData.summary.totalIncome)}`,
-                  `Total Expense: ${fmt(reportData.summary.totalExpense)}`,
-                  `Net Balance: ${fmt(reportData.summary.netBalance)}`,
-                  `Total Transactions: ${reportData.summary.totalTransactions}`,
-                ];
-                const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `Dashboard_Report_${reportData.period.replace(/\s+/g, '_')}.txt`;
-                a.click();
-                URL.revokeObjectURL(url);
-              } catch (e) {
-                console.error('Failed to download report:', e);
-                setError('Failed to download report. Please try again.');
-              }
-            }}
-            disabled={loading}
-          >
-            Download Reports
-          </button>
           <button className="btn-blue" onClick={() => setActiveModal('income')}>Add New Income</button>
           <button className="btn-blue" onClick={() => setActiveModal('expense')}>Add New Expenses</button>
         </div>

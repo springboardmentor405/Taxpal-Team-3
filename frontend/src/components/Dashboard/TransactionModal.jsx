@@ -92,7 +92,7 @@ const TransactionModal = ({ type, onClose, onSave }) => {
                             <div className="form-group">
                                 <label htmlFor="tm-amount">Amount</label>
                                 <div className="tm-amount-wrapper">
-                                    <span className="amount-prefix">$</span>
+                                    <span className="amount-prefix">₹</span>
                                     <input
                                         id="tm-amount"
                                         type="number"

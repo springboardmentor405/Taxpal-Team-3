@@ -1,9 +1,16 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { FileText, ChevronDown } from 'lucide-react';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import * as XLSX from 'xlsx';
 import '../sass/Reports.scss';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = (() => {
+    const raw = import.meta.env.VITE_API_URL || "http://localhost:5000";
+    const base = String(raw).replace(/\/+$/, "");
+    return base.endsWith("/api") ? base : `${base}/api`;
+})();
 
 const getAuthHeaders = () => {
     const token = localStorage.getItem('token');
@@ -11,7 +18,10 @@ const getAuthHeaders = () => {
 };
 
 const fmt = (n) =>
-    `$${Number(n).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+    `₹${Number(n).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
+
+const fmtPDF = (n) =>
+    `Rs. ${Number(n).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
 
 const Reports = () => {
     const [reportType, setReportType] = useState('Income Statement');
@@ -41,39 +51,127 @@ const Reports = () => {
 
     const handleDownload = () => {
         if (!reportData) return;
-        const lines = [
-            `Report: ${reportData.reportType}`,
-            `Period: ${reportData.period}`,
-            ``,
-            `SUMMARY`,
-            `Total Income: ${fmt(reportData.summary.totalIncome)}`,
-            `Total Expense: ${fmt(reportData.summary.totalExpense)}`,
-            `Net Balance: ${fmt(reportData.summary.netBalance)}`,
-            `Total Transactions: ${reportData.summary.totalTransactions}`,
-            ``,
-            `INCOME BY CATEGORY`,
-            ...Object.entries(reportData.incomeByCategory).map(
-                ([k, v]) => `  ${k}: ${fmt(v)}`
-            ),
-            ``,
-            `EXPENSE BY CATEGORY`,
-            ...Object.entries(reportData.expenseByCategory).map(
-                ([k, v]) => `  ${k}: ${fmt(v)}`
-            ),
-            ``,
-            `TRANSACTIONS`,
-            ...reportData.transactions.map(
-                (t) =>
-                    `  ${new Date(t.date).toLocaleDateString()} | ${t.title} | ${t.type} | ${fmt(t.amount)} | ${t.category}`
-            ),
-        ];
-        const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${reportData.reportType.replace(/\s+/g, '_')}_${reportData.period.replace(/\s+/g, '_')}.txt`;
-        a.click();
-        URL.revokeObjectURL(url);
+
+        if (format === 'PDF') {
+            exportToPDF();
+        } else if (format === 'Excel') {
+            exportToExcel();
+        } else {
+            // Fallback for .txt download
+            const lines = [
+                `Report: ${reportData.reportType}`,
+                `Period: ${reportData.period}`,
+                ``,
+                `SUMMARY`,
+                `Total Income: ${fmt(reportData.summary.totalIncome)}`,
+                `Total Expense: ${fmt(reportData.summary.totalExpense)}`,
+                `Net Balance: ${fmt(reportData.summary.netBalance)}`,
+                `Total Transactions: ${reportData.summary.totalTransactions}`,
+                ``,
+                `TRANSACTIONS`,
+                ...reportData.transactions.map(
+                    (t) =>
+                        `  ${new Date(t.date).toLocaleDateString()} | ${t.description || 'Untitled'} | ${t.type} | ${fmt(t.amount)} | ${t.category}`
+                ),
+            ];
+            const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${reportData.reportType.replace(/\s+/g, '_')}_${reportData.period.replace(/\s+/g, '_')}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    };
+
+    const exportToPDF = () => {
+        try {
+            const doc = new jsPDF();
+            const date = new Date().toLocaleDateString();
+
+            // Header - Solid Black Text
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(22);
+            doc.text('Financial Report', 14, 22);
+            
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(10);
+            doc.text(`Generated on: ${date}`, 14, 30);
+            doc.text(`Report Type: ${reportData.reportType}`, 14, 36);
+            doc.text(`Period: ${reportData.period}`, 14, 42);
+
+            // Summary Table - Simple Grid
+            autoTable(doc, {
+                startY: 52,
+                head: [['Total Income', 'Total Expenses', 'Net Balance', 'Transactions']],
+                body: [[
+                    fmtPDF(reportData.summary.totalIncome),
+                    fmtPDF(reportData.summary.totalExpense),
+                    fmtPDF(reportData.summary.netBalance),
+                    reportData.summary.totalTransactions
+                ]],
+                theme: 'grid',
+                headStyles: { fillColor: [240, 240, 240], textColor: [0, 0, 0], fontStyle: 'bold' },
+                styles: { fontSize: 10, cellPadding: 3 }
+            });
+
+            // Transactions Table - Simple Grid
+            autoTable(doc, {
+                startY: doc.lastAutoTable.finalY + 12,
+                head: [['Date', 'Description', 'Category', 'Type', 'Amount']],
+                body: reportData.transactions.map(t => [
+                    new Date(t.date).toLocaleDateString(),
+                    t.description || 'Untitled',
+                    t.category,
+                    t.type,
+                    fmtPDF(t.amount)
+                ]),
+                theme: 'grid',
+                headStyles: { fillColor: [240, 240, 240], textColor: [0, 0, 0], fontStyle: 'bold' },
+                styles: { fontSize: 9, cellPadding: 2 }
+            });
+
+            doc.save(`${reportData.reportType.replace(/\s+/g, '_')}.pdf`);
+        } catch (e) {
+            console.error('PDF Export Error:', e);
+            setError('Failed to generate PDF. Make sure you have jspdf installed.');
+        }
+    };
+
+    const exportToExcel = () => {
+        try {
+            // Prepare data
+            const summary = [
+                ['Category', 'Value'],
+                ['Total Income', reportData.summary.totalIncome],
+                ['Total Expense', reportData.summary.totalExpense],
+                ['Net Balance', reportData.summary.netBalance],
+                ['Transaction Count', reportData.summary.totalTransactions]
+            ];
+
+            const txs = reportData.transactions.map(t => ({
+                Date: new Date(t.date).toLocaleDateString(),
+                Description: t.description || 'Untitled',
+                Category: t.category,
+                Type: t.type,
+                Amount: t.amount
+            }));
+
+            // Create Sheets
+            const wb = XLSX.utils.book_new();
+            const wsSummary = XLSX.utils.aoa_to_sheet(summary);
+            const wsTxs = XLSX.utils.json_to_sheet(txs);
+
+            // Append Sheets
+            XLSX.utils.book_append_sheet(wb, wsSummary, 'Summary');
+            XLSX.utils.book_append_sheet(wb, wsTxs, 'Transactions');
+
+            // Download
+            XLSX.writeFile(wb, `${reportData.reportType.replace(/\s+/g, '_')}.xlsx`);
+        } catch (e) {
+            console.error('Excel Export Error:', e);
+            setError('Failed to generate Excel file.');
+        }
     };
 
     return (
@@ -115,7 +213,6 @@ const Reports = () => {
                         <div className="select-wrapper">
                             <select value={format} onChange={(e) => setFormat(e.target.value)}>
                                 <option>PDF</option>
-                                <option>CSV</option>
                                 <option>Excel</option>
                             </select>
                             <ChevronDown className="select-icon" size={18} />
@@ -244,7 +341,7 @@ const Reports = () => {
                                             {reportData.transactions.map((t) => (
                                                 <tr key={t._id}>
                                                     <td>{new Date(t.date).toLocaleDateString()}</td>
-                                                    <td>{t.title}</td>
+                                                    <td>{t.description || 'Untitled'}</td>
                                                     <td>{t.category}</td>
                                                     <td>{t.type}</td>
                                                     <td style={{ color: t.type === 'Income' ? 'green' : 'red' }}>

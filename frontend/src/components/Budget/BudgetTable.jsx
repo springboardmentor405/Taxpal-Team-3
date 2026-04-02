@@ -1,5 +1,12 @@
 import { useState } from "react";
 
+const API_BASE = (() => {
+  const raw = import.meta.env.VITE_API_URL || "http://localhost:5000";
+  const base = String(raw).replace(/\/+$/, "");
+  return base.endsWith("/api") ? base : `${base}/api`;
+})();
+
+
 const BudgetTable = ({ budgets, onRefresh }) => {
   const [editingBudget, setEditingBudget] = useState(null);
   const [editForm, setEditForm] = useState({});
@@ -18,7 +25,7 @@ const BudgetTable = ({ budgets, onRefresh }) => {
 
   const handleSave = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/api/budgets/${editingBudget.id}`, {
+      const res = await fetch(`${API_BASE}/budgets/${editingBudget.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -60,10 +67,10 @@ const BudgetTable = ({ budgets, onRefresh }) => {
                     <span className="cat-dot" style={{ background: b.color }} />
                     {b.category}
                   </td>
-                  <td>${b.budget.toLocaleString()}</td>
-                  <td>${b.spent.toLocaleString()}</td>
+                  <td>₹{b.budget.toLocaleString('en-IN')}</td>
+                  <td>₹{b.spent.toLocaleString('en-IN')}</td>
                   <td className={b.remaining < 0 ? "text-red" : "text-teal"}>
-                    ${b.remaining.toLocaleString()}
+                    ₹{b.remaining.toLocaleString('en-IN')}
                   </td>
                   <td>
                     <div className="table-progress-bg">
