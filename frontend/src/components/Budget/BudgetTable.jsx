@@ -23,6 +23,23 @@ const BudgetTable = ({ budgets, onRefresh }) => {
     setEditForm({ budget_amount: b.budget, spent: b.spent });
   };
 
+  const handleDeleteClick = async (budget) => {
+    if (!window.confirm(`Are you sure you want to delete the budget for ${budget.category}?`)) return;
+    try {
+      const res = await fetch(`${API_BASE}/budgets/${budget.id}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (data.success) {
+        onRefresh();
+      } else {
+        alert(data.message || "Failed to delete budget");
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const handleSave = async () => {
     try {
       const res = await fetch(`${API_BASE}/budgets/${editingBudget.id}`, {
@@ -91,6 +108,13 @@ const BudgetTable = ({ budgets, onRefresh }) => {
                   <td>
                     <button className="edit-btn" onClick={() => handleEditClick(b)}>
                       ✏ Edit
+                    </button>
+                    <button 
+                      className="delete-btn" 
+                      onClick={() => handleDeleteClick(b)}
+                      style={{ marginLeft: '8px', padding: '6px 12px', background: '#fee2e2', color: '#ef4444', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '500' }}
+                    >
+                      🗑 Delete
                     </button>
                   </td>
                 </tr>

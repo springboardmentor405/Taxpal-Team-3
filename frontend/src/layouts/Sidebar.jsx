@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { LayoutGrid, RefreshCw, Wallet, Calculator, BarChart3, Settings, LogOut } from 'lucide-react';
 import UserProfileHeader from '../components/Common/UserProfileHeader';
 import myLogo from '../assets/images/logo.svg'; 
@@ -7,6 +7,7 @@ import '../sass/Sidebar.scss';
 
 const Sidebar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const isActive = (path) => location.pathname === path;
 
   const menuItems = [
@@ -16,6 +17,13 @@ const Sidebar = () => {
     { name: 'Tax Estimator', icon: <Calculator size={20} />, path: '/tax-estimator' },
     { name: 'Reports', icon: <BarChart3 size={20} />, path: '/reports' },
   ];
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('resetEmail');
+    localStorage.removeItem('verifiedOtp');
+    navigate('/login');
+  };
 
   return (
     <aside className="sidebar">
@@ -39,9 +47,9 @@ const Sidebar = () => {
           <Link to="/settings" className="footer-link">
             <Settings size={18} /> <span>Settings</span>
           </Link>
-          <Link to="/login" className="footer-link">
+          <button onClick={handleLogout} className="footer-link logout-btn" style={{ background: 'none', border: 'none', cursor: 'pointer', width: '100%', textAlign: 'left', marginLeft: '10px' }}>
             <LogOut size={18} /> <span>Log out</span>
-          </Link>
+          </button>
         </div>
       </div>
     </aside>

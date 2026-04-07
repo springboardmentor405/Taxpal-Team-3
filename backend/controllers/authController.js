@@ -97,7 +97,7 @@ export const forgotPassword = async (req, res) => {
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-    const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
+    const otpExpires = new Date(Date.now() + 5 * 60 * 1000);
 
     user.resetOtp = otp;
     user.otpExpires = otpExpires;
@@ -128,6 +128,11 @@ export const verifyOtp = async (req, res) => {
 
     if (user.resetOtp !== otp) return res.status(400).json({ message: "Invalid OTP" });
     if (new Date() > user.otpExpires) return res.status(400).json({ message: "OTP has expired" });
+
+    // Extend the window by 10 minutes so the reset-password step
+    // doesn't fail if the user takes a moment to set their new password.
+    user.otpExpires = new Date(Date.now() + 10 * 60 * 1000);
+    await user.save();
 
     res.status(200).json({ message: "OTP verified successfully" });
   } catch (error) {

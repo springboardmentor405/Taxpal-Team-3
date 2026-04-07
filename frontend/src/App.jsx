@@ -1,6 +1,9 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
+import PrivateRoute from "./components/Auth/PrivateRoute";
+
 import SignUp from "./pages/SignUp";
 import Login from "./pages/Login";
 import ForgotPassword from "./pages/ForgotPassword";
@@ -9,7 +12,6 @@ import ResetPassword from "./pages/ResetPassword";
 import Dashboard from "./pages/Dashboard";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
-import Sidebar from "./layouts/Sidebar";
 import DashboardLayout from "./layouts/DashboardLayout";
 import TransactionsLayout from "./layouts/TransactionsLayout";
 import Transactions from "./pages/Transactions";
@@ -21,62 +23,80 @@ function App() {
   return (
     <Router>
       <Routes>
+        {/* Redirect root to login */}
         <Route path="/" element={<Navigate to="/login" />} />
 
+        {/* Public auth routes */}
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/verify-mail" element={<VerifyMail />} />
         <Route path="/reset-password" element={<ResetPassword />} />
 
+        {/* Protected routes — require a valid token */}
         <Route
           path="/dashboard"
           element={
-            <DashboardLayout>
-              <Dashboard />
-            </DashboardLayout>
+            <PrivateRoute>
+              <DashboardLayout>
+                <Dashboard />
+              </DashboardLayout>
+            </PrivateRoute>
           }
         />
         <Route
           path="/transactions"
           element={
-            <TransactionsLayout>
-              <Transactions />
-            </TransactionsLayout>
+            <PrivateRoute>
+              <TransactionsLayout>
+                <Transactions />
+              </TransactionsLayout>
+            </PrivateRoute>
           }
         />
         <Route
           path="/budgets"
-          element={<Budget />}
+          element={
+            <PrivateRoute>
+              <Budget />
+            </PrivateRoute>
+          }
         />
         <Route
           path="/tax-estimator"
           element={
-            <TaxEstimatorLayout>
-              <TaxEstimator />
-            </TaxEstimatorLayout>
+            <PrivateRoute>
+              <TaxEstimatorLayout>
+                <TaxEstimator />
+              </TaxEstimatorLayout>
+            </PrivateRoute>
           }
         />
-
-        
         <Route
           path="/settings"
           element={
-            <DashboardLayout>
-              <Settings />
-            </DashboardLayout>
+            <PrivateRoute>
+              <DashboardLayout>
+                <Settings />
+              </DashboardLayout>
+            </PrivateRoute>
           }
         />
-
         <Route
           path="/reports"
           element={
-            <DashboardLayout>
-              <Reports />
-            </DashboardLayout>
+            <PrivateRoute>
+              <DashboardLayout>
+                <Reports />
+              </DashboardLayout>
+            </PrivateRoute>
           }
         />
+
+        {/* Catch-all — redirect unknown paths to login */}
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
+
       <ToastContainer
         position="top-right"
         autoClose={5000}

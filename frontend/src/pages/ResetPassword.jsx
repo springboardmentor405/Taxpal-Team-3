@@ -1,30 +1,29 @@
-import AuthCard from '../components/Auth/AuthCard';
-import AuthHeader from '../components/Auth/AuthHeader';
-import AuthLayout from '../layouts/AuthLayout';
-import PasswordField from '../components/Auth/PasswordField';
-import PrimaryButton from '../components/Auth/PrimaryButton';
-import AuthLink from '../components/Auth/AuthLink';
-import { Lock, Eye } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { toast } from "react-toastify";
+import { resetPasswordAPI } from "../config/api";
+
+import AuthCard from "../components/Auth/AuthCard";
+import AuthHeader from "../components/Auth/AuthHeader";
+import AuthLayout from "../layouts/AuthLayout";
+import PasswordField from "../components/Auth/PasswordField";
+import PrimaryButton from "../components/Auth/PrimaryButton";
+import AuthLink from "../components/Auth/AuthLink";
+import { Lock, Eye } from "lucide-react";
 
 function ResetPassword() {
-  const [newPassword, setNewPassword] = useState("");
+  const navigate = useNavigate();
+  const [newPassword, setNewPassword]         = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [otp, setOtp] = useState(""); 
+  const [otp, setOtp]     = useState("");
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
 
   useEffect(() => {
-    const storedEmail = localStorage.getItem('resetEmail');
-    const storedOtp = localStorage.getItem('verifiedOtp');
-    
+    const storedEmail = localStorage.getItem("resetEmail");
+    const storedOtp   = localStorage.getItem("verifiedOtp");
     if (storedEmail) setEmail(storedEmail);
-    if (storedOtp) setOtp(storedOtp);
-
+    if (storedOtp)   setOtp(storedOtp);
     if (!storedEmail || !storedOtp) {
       toast.error("Session expired. Please start over.");
       navigate("/forgot-password");
@@ -32,24 +31,14 @@ function ResetPassword() {
   }, [navigate]);
 
   const handleReset = async () => {
-    if (newPassword !== confirmPassword) {
-      return toast.error("Passwords do not match");
-    }
-
+    if (newPassword.length < 8) { toast.error("Password must be at least 8 characters"); return; }
+    if (newPassword !== confirmPassword) { toast.error("Passwords do not match"); return; }
     try {
       setLoading(true);
-      const apiBase = import.meta.env.VITE_API_URL || "http://localhost:5000";
-      await axios.post(`${apiBase}/api/auth/reset-password`, {
-        email: email,
-        otp: otp, 
-        newPassword: newPassword,
-      });
-
+      await resetPasswordAPI(email, otp, newPassword);
       toast.success("Password reset successful!");
-      
-      localStorage.removeItem('resetEmail');
-      localStorage.removeItem('verifiedOtp');
-      
+      localStorage.removeItem("resetEmail");
+      localStorage.removeItem("verifiedOtp");
       navigate("/login");
     } catch (error) {
       toast.error(error.response?.data?.message || "Reset failed");
@@ -57,14 +46,11 @@ function ResetPassword() {
       setLoading(false);
     }
   };
+
   return (
     <AuthLayout>
       <AuthCard>
-        <AuthHeader
-          title="Reset Password"
-          subtitle="Create a new password for your account"
-        />
-
+        <AuthHeader title="Reset Password" subtitle="Create a new password for your account" />
         <PasswordField
           placeholder="Enter a new password"
           leftIcon={<Lock size={20} />}
@@ -73,22 +59,14 @@ function ResetPassword() {
           onChange={(e) => setNewPassword(e.target.value)}
         />
         <PasswordField
-          placeholder="Confirm new Password"
+          placeholder="Confirm new password"
           leftIcon={<Lock size={20} />}
           rightIcon={<Eye size={20} />}
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
         />
-        <PrimaryButton
-          text={loading ? "Resetting..." : "Reset Password"}
-          onClick={handleReset}
-          disabled={loading}
-        />
-        <AuthLink
-          text="Back to"
-          linkText="Sign In"
-          to="/login"
-        />
+        <PrimaryButton text={loading ? "Resetting..." : "Reset Password"} onClick={handleReset} disabled={loading} />
+        <AuthLink text="Back to" linkText="Sign In" to="/login" />
       </AuthCard>
     </AuthLayout>
   );

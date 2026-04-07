@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../../sass/UserProfileHeader.scss';
 
-import '../../sass/UserProfileHeader.scss';
-
 const UserProfileHeader = ({ variant = 'header' }) => {
     const [userProfile, setUserProfile] = useState({ name: 'User', email: 'user@example.com' });
 

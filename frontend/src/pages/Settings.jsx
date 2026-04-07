@@ -1,70 +1,86 @@
 import React, { useState, useEffect } from 'react';
-import { Edit2, Lock, Eye, Check, X, Shield, Smartphone, Mail, Plus, Trash2 } from 'lucide-react';
+import { Edit2, Lock, Eye, EyeOff, Shield, Smartphone, Mail, Plus, Trash2 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import '../sass/Settings.scss';
 
+import { API_BASE } from '../config/api';
+
+const getAuthHeaders = () => ({
+  headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+});
+
 const Settings = () => {
   const [activeTab, setActiveTab] = useState('Profile');
   const [categorySubTab, setCategorySubTab] = useState('Expense');
+  const [pageLoading, setPageLoading] = useState(true);
 
   // --- Profile State ---
-  const [profile, setProfile] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    role: '',
-    location: ''
-  });
-  const [originalProfile, setOriginalProfile] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    role: '',
-    location: ''
-  });
+  const emptyProfile = { firstName: '', lastName: '', email: '', phone: '', role: '', location: '' };
+  const [profile, setProfile] = useState(emptyProfile);
+  const [originalProfile, setOriginalProfile] = useState(emptyProfile);
+  const [profileSaving, setProfileSaving] = useState(false);
 
+  // --- Categories ---
+  const [expenseCategories, setExpenseCategories] = useState([]);
+  const [incomeCategories, setIncomeCategories] = useState([]);
+  const [newCategoryName, setNewCategoryName] = useState('');
+
+  // --- Notifications ---
+  const [notifications, setNotifications] = useState({
+    taxReminder: true, budgetAlert: true, newTransaction: false, lowBalance: true,
+    taxFreq: '3 days before', budgetFreq: 'At 80%', pushEnabled: true, emailEnabled: true,
+  });
+  const [notifSaving, setNotifSaving] = useState(false);
+
+  // --- Security ---
+  const [security, setSecurity] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
+  const [showPwd, setShowPwd] = useState(false);
+  const [pwdSaving, setPwdSaving] = useState(false);
+
+  // ─── Initial data fetch ───────────────────────────────────────────────
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchAll = async () => {
+      setPageLoading(true);
       try {
-        const token = localStorage.getItem("token");
-        if (!token) return;
+        const token = localStorage.getItem('token');
+        if (!token) { toast.error('Not logged in'); return; }
 
-        // Fetch Profile & Notifications
-        const profileRes = await axios.get("http://localhost:5000/api/users/profile", {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        const profileData = profileRes.data;
-        const initialProfile = {
-          firstName: profileData.firstName || '',
-          lastName: profileData.lastName || '',
-          email: profileData.email || '',
-          phone: profileData.phone || '',
-          role: profileData.role || '',
-          location: profileData.location || ''
+        const [profileRes, catRes] = await Promise.all([
+          axios.get(`${API_BASE}/users/profile`, getAuthHeaders()),
+          axios.get(`${API_BASE}/categories`, getAuthHeaders()),
+        ]);
+
+        const d = profileRes.data;
+        const loaded = {
+          firstName: d.firstName || '',
+          lastName:  d.lastName  || '',
+          email:     d.email     || '',
+          phone:     d.phone     || '',
+          role:      d.role      || '',
+          location:  d.location  || '',
         };
-        setProfile(initialProfile);
-        setOriginalProfile(initialProfile);
-        if (profileData.notificationSettings) {
-          setNotifications(prev => ({ ...prev, ...profileData.notificationSettings }));
+        setProfile(loaded);
+        setOriginalProfile(loaded);
+
+        if (d.notificationSettings) {
+          setNotifications(prev => ({ ...prev, ...d.notificationSettings }));
         }
 
-        // Fetch Categories
-        const catRes = await axios.get("http://localhost:5000/api/categories", {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        setExpenseCategories(catRes.data.filter(c => c.type === 'Expense'));
-        setIncomeCategories(catRes.data.filter(c => c.type === 'Income'));
-
+        const cats = catRes.data;
+        setExpenseCategories(cats.filter(c => c.type === 'Expense'));
+        setIncomeCategories(cats.filter(c => c.type === 'Income'));
       } catch (err) {
-        console.error("Failed to load settings", err);
+        console.error('Failed to load settings:', err);
+        toast.error('Could not load settings data');
+      } finally {
+        setPageLoading(false);
       }
     };
-    fetchData();
+    fetchAll();
   }, []);
 
+  // ─── Profile ─────────────────────────────────────────────────────────
   const handleProfileChange = (e) => {
     const { name, value } = e.target;
     setProfile(prev => ({ ...prev, [name]: value }));
@@ -72,124 +88,79 @@ const Settings = () => {
 
   const handleProfileSave = async (e) => {
     e.preventDefault();
+    setProfileSaving(true);
     try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        toast.error("You are not logged in!");
-        return;
-      }
-      await axios.put("http://localhost:5000/api/users/profile", profile, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setOriginalProfile(profile);
-      toast.success("Profile saved successfully!");
+      const res = await axios.put(`${API_BASE}/users/profile`, profile, getAuthHeaders());
+      const d = res.data;
+      const saved = {
+        firstName: d.firstName || '', lastName: d.lastName || '',
+        email: d.email || '', phone: d.phone || '',
+        role: d.role || '', location: d.location || '',
+      };
+      setOriginalProfile(saved);
+      setProfile(saved);
+      toast.success('Profile saved successfully!');
     } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to save profile");
+      toast.error(err.response?.data?.message || 'Failed to save profile');
+    } finally {
+      setProfileSaving(false);
     }
   };
 
   const handleProfileDiscard = () => {
-    setProfile({
-      firstName: '',
-      lastName: '',
-      email: '',
-      phone: '',
-      role: '',
-      location: ''
-    });
-    toast.info("Changes discarded and fields cleared");
+    setProfile(originalProfile);
+    toast.info('Changes discarded');
   };
 
-  // --- Categories State ---
-  const [expenseCategories, setExpenseCategories] = useState([]);
-  const [incomeCategories, setIncomeCategories] = useState([]);
-  const [newCategoryName, setNewCategoryName] = useState('');
-
+  // ─── Categories ──────────────────────────────────────────────────────
   const handleAddCategory = async () => {
     if (!newCategoryName.trim()) return;
     try {
-      const token = localStorage.getItem("token");
-      const res = await axios.post("http://localhost:5000/api/categories", {
-        name: newCategoryName,
+      const res = await axios.post(`${API_BASE}/categories`, {
+        name: newCategoryName.trim(),
         type: categorySubTab,
-        color: ['red', 'purple', 'orange', 'blue', 'green'][Math.floor(Math.random() * 5)]
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
-      if (categorySubTab === 'Expense') {
-        setExpenseCategories(prev => [...prev, res.data]);
-      } else {
-        setIncomeCategories(prev => [...prev, res.data]);
-      }
+        color: ['red', 'purple', 'orange', 'blue', 'green'][Math.floor(Math.random() * 5)],
+      }, getAuthHeaders());
+      if (categorySubTab === 'Expense') setExpenseCategories(prev => [...prev, res.data]);
+      else setIncomeCategories(prev => [...prev, res.data]);
       setNewCategoryName('');
-      toast.success("Category added!");
-    } catch (err) {
-      toast.error("Failed to add category");
+      toast.success('Category added!');
+    } catch {
+      toast.error('Failed to add category');
     }
   };
 
   const handleDeleteCategory = async (id, type) => {
     try {
-      const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:5000/api/categories/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (type === 'Expense') {
-        setExpenseCategories(prev => prev.filter(c => c._id !== id));
-      } else {
-        setIncomeCategories(prev => prev.filter(c => c._id !== id));
-      }
-      toast.success("Category deleted!");
-    } catch (err) {
-      toast.error("Failed to delete category");
+      await axios.delete(`${API_BASE}/categories/${id}`, getAuthHeaders());
+      if (type === 'Expense') setExpenseCategories(prev => prev.filter(c => (c._id || c.id) !== id));
+      else setIncomeCategories(prev => prev.filter(c => (c._id || c.id) !== id));
+      toast.success('Category deleted!');
+    } catch {
+      toast.error('Failed to delete category');
     }
   };
 
-  // --- Notifications State ---
-  const [notifications, setNotifications] = useState({
-    taxReminder: true,
-    budgetAlert: true,
-    newTransaction: false,
-    lowBalance: true,
-    taxFreq: '3 days before',
-    budgetFreq: 'At 80%',
-    pushEnabled: true,
-    emailEnabled: true
-  });
-
-  const handleNotifToggle = (key) => {
-    setNotifications(prev => ({ ...prev, [key]: !prev[key] }));
-  };
-
+  // ─── Notifications ───────────────────────────────────────────────────
+  const handleNotifToggle = (key) => setNotifications(prev => ({ ...prev, [key]: !prev[key] }));
   const handleNotifChange = (e) => {
     const { name, value } = e.target;
     setNotifications(prev => ({ ...prev, [name]: value }));
   };
 
   const handleNotifSave = async () => {
+    setNotifSaving(true);
     try {
-      const token = localStorage.getItem("token");
-      await axios.put("http://localhost:5000/api/users/profile", {
-        notificationSettings: notifications
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      toast.success("Notification preferences updated!");
-    } catch (err) {
-      toast.error("Failed to update preferences");
+      await axios.put(`${API_BASE}/users/profile`, { notificationSettings: notifications }, getAuthHeaders());
+      toast.success('Notification preferences saved!');
+    } catch {
+      toast.error('Failed to update preferences');
+    } finally {
+      setNotifSaving(false);
     }
   };
 
-  // --- Security State ---
-  const [security, setSecurity] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: '',
-    twoFactor: true
-  });
-  const [showPwd, setShowPwd] = useState(false);
-
+  // ─── Security ────────────────────────────────────────────────────────
   const handleSecurityChange = (e) => {
     const { name, value } = e.target;
     setSecurity(prev => ({ ...prev, [name]: value }));
@@ -198,29 +169,33 @@ const Settings = () => {
   const handleSecuritySave = async (e) => {
     e.preventDefault();
     if (!security.currentPassword || !security.newPassword) {
-      toast.error("All password fields are required");
+      toast.error('All password fields are required');
+      return;
+    }
+    if (security.newPassword.length < 8) {
+      toast.error('New password must be at least 8 characters');
       return;
     }
     if (security.newPassword !== security.confirmPassword) {
-      toast.error("New passwords do not match!");
+      toast.error('New passwords do not match!');
       return;
     }
+    setPwdSaving(true);
     try {
-      const token = localStorage.getItem("token");
-      await axios.put("http://localhost:5000/api/users/change-password", {
+      await axios.put(`${API_BASE}/users/change-password`, {
         currentPassword: security.currentPassword,
-        newPassword: security.newPassword
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      toast.success("Password updated successfully!");
-      setSecurity({ currentPassword: '', newPassword: '', confirmPassword: '', twoFactor: security.twoFactor });
+        newPassword: security.newPassword,
+      }, getAuthHeaders());
+      toast.success('Password updated successfully!');
+      setSecurity({ currentPassword: '', newPassword: '', confirmPassword: '' });
     } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to update password");
+      toast.error(err.response?.data?.message || 'Failed to update password');
+    } finally {
+      setPwdSaving(false);
     }
   };
 
-
+  // ─── Renderers ───────────────────────────────────────────────────────
   const renderProfileTab = () => (
     <form className="settings-form" onSubmit={handleProfileSave}>
       <div className="form-row">
@@ -233,18 +208,16 @@ const Settings = () => {
           <input type="text" name="lastName" value={profile.lastName} onChange={handleProfileChange} className="form-input" placeholder="Enter your last name" />
         </div>
       </div>
-
       <div className="form-row">
         <div className="form-group">
           <label className="form-label">Email Address</label>
-          <input type="email" name="email" value={profile.email} onChange={handleProfileChange} className="form-input" placeholder="Enter your email address" />
+          <input type="email" name="email" value={profile.email} onChange={handleProfileChange} className="form-input" placeholder="Enter your email" />
         </div>
         <div className="form-group">
           <label className="form-label">Phone Number</label>
           <input type="tel" name="phone" value={profile.phone} onChange={handleProfileChange} className="form-input" placeholder="Enter your phone number" />
         </div>
       </div>
-
       <div className="form-row">
         <div className="form-group">
           <label className="form-label">Professional Role</label>
@@ -257,37 +230,26 @@ const Settings = () => {
         </div>
         <div className="form-group">
           <label className="form-label">Location / City</label>
-          <input type="text" name="location" value={profile.location} onChange={handleProfileChange} className="form-input" placeholder="Enter your location / city" />
+          <input type="text" name="location" value={profile.location} onChange={handleProfileChange} className="form-input" placeholder="Enter your location" />
         </div>
       </div>
-
       <div className="form-actions">
         <button type="button" className="btn-cancel" onClick={handleProfileDiscard}>Discard</button>
-        <button type="submit" className="btn-save">Save Profile</button>
+        <button type="submit" className="btn-save" disabled={profileSaving}>
+          {profileSaving ? 'Saving…' : 'Save Profile'}
+        </button>
       </div>
     </form>
   );
 
   const renderCategoriesTab = () => {
     const list = categorySubTab === 'Expense' ? expenseCategories : incomeCategories;
-
     return (
       <div className="categories-section">
         <div className="categories-subtabs">
-          <button 
-            className={`subtab ${categorySubTab === 'Expense' ? 'active' : ''}`}
-            onClick={() => setCategorySubTab('Expense')}
-          >
-            Expense Categories
-          </button>
-          <button 
-            className={`subtab ${categorySubTab === 'Income' ? 'active' : ''}`}
-            onClick={() => setCategorySubTab('Income')}
-          >
-            Income Categories
-          </button>
+          <button className={`subtab ${categorySubTab === 'Expense' ? 'active' : ''}`} onClick={() => setCategorySubTab('Expense')}>Expense Categories</button>
+          <button className={`subtab ${categorySubTab === 'Income'  ? 'active' : ''}`} onClick={() => setCategorySubTab('Income')}>Income Categories</button>
         </div>
-
         <div className="categories-list">
           {list.map(cat => (
             <div className="category-item" key={cat._id || cat.id}>
@@ -296,21 +258,20 @@ const Settings = () => {
                 <span className="category-name">{cat.name}</span>
               </div>
               <div className="category-actions">
-                <Trash2 size={16} color="#ef4444" onClick={() => handleDeleteCategory(cat._id || cat.id, categorySubTab)} />
+                <Trash2 size={16} color="#ef4444" style={{ cursor: 'pointer' }} onClick={() => handleDeleteCategory(cat._id || cat.id, categorySubTab)} />
               </div>
             </div>
           ))}
-          {list.length === 0 && <p className="empty-text">No categories found.</p>}
+          {list.length === 0 && <p className="empty-text">No categories yet. Add one below.</p>}
         </div>
-
         <div className="add-category-inline">
-          <input 
-            type="text" 
-            placeholder="Type new category name..." 
+          <input
+            type="text"
+            placeholder="Type new category name..."
             value={newCategoryName}
-            onChange={(e) => setNewCategoryName(e.target.value)}
+            onChange={e => setNewCategoryName(e.target.value)}
             className="form-input add-cat-input"
-            onKeyDown={(e) => e.key === 'Enter' && handleAddCategory()}
+            onKeyDown={e => e.key === 'Enter' && handleAddCategory()}
           />
           <button className="add-category-btn-small" onClick={handleAddCategory}>
             <Plus size={16} /> Add
@@ -322,60 +283,45 @@ const Settings = () => {
 
   const renderNotificationsTab = () => (
     <div className="notifications-section">
+      <div className="delivery-methods">
+        <h3 className="section-title">Delivery Methods</h3>
+        <div className="delivery-item">
+          <div className="icon-wrapper blue"><Mail size={16} /></div>
+          <span className="method-name">Email Notifications</span>
+          <label className="toggle-switch">
+            <input type="checkbox" checked={notifications.emailEnabled} onChange={() => handleNotifToggle('emailEnabled')} />
+            <span className="slider round"></span>
+          </label>
+        </div>
+        <div className="delivery-item">
+          <div className="icon-wrapper green"><Smartphone size={16} /></div>
+          <span className="method-name">Push Notifications</span>
+          <label className="toggle-switch">
+            <input type="checkbox" checked={notifications.pushEnabled} onChange={() => handleNotifToggle('pushEnabled')} />
+            <span className="slider round"></span>
+          </label>
+        </div>
+      </div>
+
       <div className="alert-preferences">
         <h3 className="section-title">Alert Preferences</h3>
-        
-        <div className="alert-item">
-          <div className="alert-info">
-            <div className="icon-wrapper teal"><span className="money-icon">💰</span></div>
-            <span className="alert-name">Tax Due Date Reminder</span>
-          </div>
-          <div className="alert-controls">
+        {[
+          { key: 'taxReminder',    icon: '💰', label: 'Tax Due Date Reminder',  wrap: 'teal'   },
+          { key: 'budgetAlert',    icon: '💳', label: 'Budget Exceeded Alert',   wrap: 'yellow' },
+          { key: 'newTransaction', icon: '🔄', label: 'New Transaction Logged',  wrap: 'orange' },
+          { key: 'lowBalance',     icon: '📉', label: 'Low Balance Warning',     wrap: 'purple' },
+        ].map(({ key, icon, label, wrap }) => (
+          <div className="alert-item" key={key}>
+            <div className="alert-info">
+              <div className={`icon-wrapper ${wrap}`}><span>{icon}</span></div>
+              <span className="alert-name">{label}</span>
+            </div>
             <label className="toggle-switch">
-              <input type="checkbox" checked={notifications.taxReminder} onChange={() => handleNotifToggle('taxReminder')} />
+              <input type="checkbox" checked={notifications[key]} onChange={() => handleNotifToggle(key)} />
               <span className="slider round"></span>
             </label>
           </div>
-        </div>
-        
-        <div className="alert-item">
-          <div className="alert-info">
-            <div className="icon-wrapper yellow"><span className="wallet-icon">💳</span></div>
-            <span className="alert-name">Budget Exceeded Alert</span>
-          </div>
-          <div className="alert-controls">
-            <label className="toggle-switch">
-              <input type="checkbox" checked={notifications.budgetAlert} onChange={() => handleNotifToggle('budgetAlert')} />
-              <span className="slider round"></span>
-            </label>
-          </div>
-        </div>
-        
-        <div className="alert-item">
-          <div className="alert-info">
-            <div className="icon-wrapper orange"><span className="sync-icon">🔄</span></div>
-            <span className="alert-name">New Transaction logged</span>
-          </div>
-          <div className="alert-controls">
-            <label className="toggle-switch">
-              <input type="checkbox" checked={notifications.newTransaction} onChange={() => handleNotifToggle('newTransaction')} />
-              <span className="slider round"></span>
-            </label>
-          </div>
-        </div>
-
-        <div className="alert-item">
-          <div className="alert-info">
-            <div className="icon-wrapper purple"><span className="balance-icon">📉</span></div>
-            <span className="alert-name">Low Balance Warning</span>
-          </div>
-          <div className="alert-controls">
-            <label className="toggle-switch">
-              <input type="checkbox" checked={notifications.lowBalance} onChange={() => handleNotifToggle('lowBalance')} />
-              <span className="slider round"></span>
-            </label>
-          </div>
-        </div>
+        ))}
       </div>
 
       <div className="reminder-frequency">
@@ -397,7 +343,9 @@ const Settings = () => {
           </select>
         </div>
         <div className="notifications-actions">
-           <button className="btn-save-small" onClick={handleNotifSave}>Save Changes</button>
+          <button className="btn-save-small" onClick={handleNotifSave} disabled={notifSaving}>
+            {notifSaving ? 'Saving…' : 'Save Changes'}
+          </button>
         </div>
       </div>
     </div>
@@ -408,49 +356,59 @@ const Settings = () => {
       <form onSubmit={handleSecuritySave} className="security-form-wrapper">
         <div className="change-password-box">
           <h3 className="section-title">Change Password</h3>
-          
-          <div className="password-input-group">
-            <Lock className="input-icon-left" size={18} />
-            <input 
-              type={showPwd ? "text" : "password"} 
-              name="currentPassword"
-              placeholder="Current Password" 
-              value={security.currentPassword}
-              onChange={handleSecurityChange}
-            />
-          </div>
-
-          <div className="password-input-group">
-            <Lock className="input-icon-left" size={18} />
-            <input 
-              type={showPwd ? "text" : "password"} 
-              name="newPassword"
-              placeholder="Enter a new password" 
-              value={security.newPassword}
-              onChange={handleSecurityChange}
-            />
-            <Eye className="input-icon-right" size={18} onClick={() => setShowPwd(!showPwd)} />
-          </div>
-          
-          <div className="password-input-group">
-            <Lock className="input-icon-left" size={18} />
-            <input 
-              type={showPwd ? "text" : "password"} 
-              name="confirmPassword"
-              placeholder="Confirm new Password" 
-              value={security.confirmPassword}
-              onChange={handleSecurityChange}
-            />
+          {[
+            { name: 'currentPassword', placeholder: 'Current Password',    showToggle: false },
+            { name: 'newPassword',     placeholder: 'New Password',         showToggle: true  },
+            { name: 'confirmPassword', placeholder: 'Confirm New Password', showToggle: false },
+          ].map(({ name, placeholder, showToggle }) => (
+            <div className="password-input-group" key={name}>
+              <Lock className="input-icon-left" size={18} />
+              <input
+                type={showPwd ? 'text' : 'password'}
+                name={name}
+                placeholder={placeholder}
+                value={security[name]}
+                onChange={handleSecurityChange}
+              />
+              {showToggle && (
+                <span className="input-icon-right" onClick={() => setShowPwd(v => !v)} style={{ cursor: 'pointer' }}>
+                  {showPwd ? <EyeOff size={18} /> : <Eye size={18} />}
+                </span>
+              )}
+            </div>
+          ))}
+        </div>
+        <div className="extra-security-box">
+          <h3 className="section-title">Additional Security</h3>
+          <div className="security-item">
+            <div className="sec-info">
+              <Shield size={20} color="#1C88C7" />
+              <div className="sec-text">
+                <span className="sec-name">Two-Factor Authentication (2FA)</span>
+                <span className="sec-desc">Add an extra layer of security requiring a code to log in.</span>
+              </div>
+            </div>
+            <span className="sec-badge">Coming Soon</span>
           </div>
         </div>
-
-
         <div className="security-actions">
-          <button type="submit" className="btn-save-small">Save Security Options</button>
+          <button type="submit" className="btn-save-small" disabled={pwdSaving}>
+            {pwdSaving ? 'Saving…' : 'Save Security Options'}
+          </button>
         </div>
       </form>
     </div>
   );
+
+  if (pageLoading) {
+    return (
+      <div className="settings-page">
+        <div className="settings-container">
+          <p style={{ color: '#666', padding: '2rem' }}>Loading settings…</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="settings-page">
@@ -459,27 +417,20 @@ const Settings = () => {
           <h1 className="settings-title">Settings</h1>
           <p className="settings-subtitle">Manage your account settings and preferences</p>
         </div>
-
         <div className="settings-navigation">
-
           <div className="tabs-container">
             {['Profile', 'Categories', 'Notifications', 'Security'].map(tab => (
-              <button 
-                key={tab}
-                className={`tab ${activeTab === tab ? 'active' : ''}`}
-                onClick={() => setActiveTab(tab)}
-              >
+              <button key={tab} className={`tab ${activeTab === tab ? 'active' : ''}`} onClick={() => setActiveTab(tab)}>
                 {tab}
               </button>
             ))}
           </div>
         </div>
-
         <div className="tab-content">
-          {activeTab === 'Profile' && renderProfileTab()}
-          {activeTab === 'Categories' && renderCategoriesTab()}
+          {activeTab === 'Profile'       && renderProfileTab()}
+          {activeTab === 'Categories'    && renderCategoriesTab()}
           {activeTab === 'Notifications' && renderNotificationsTab()}
-          {activeTab === 'Security' && renderSecurityTab()}
+          {activeTab === 'Security'      && renderSecurityTab()}
         </div>
       </div>
     </div>

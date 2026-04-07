@@ -1,0 +1,110 @@
+.month-picker {
+  position: relative;
+  display: inline-block;
+}
+
+.month-picker__trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.85rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #fff;
+  color: #374151;
+  font-size: 0.85rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  white-space: nowrap;
+}
+
+.month-picker__trigger:hover {
+  border-color: #1C88C7;
+}
+
+.month-picker__trigger--active {
+  border-color: #1C88C7;
+  background: #eff6ff;
+  color: #1C88C7;
+  font-weight: 600;
+}
+
+.month-picker__clear {
+  margin-left: 0.25rem;
+  font-size: 1rem;
+  line-height: 1;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 0 2px;
+}
+.month-picker__clear:hover { color: #ef4444; }
+
+.month-picker__dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 999;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  padding: 0.75rem;
+  min-width: 220px;
+}
+
+.month-picker__year-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
+}
+
+.month-picker__year-row button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+  color: #374151;
+  display: flex;
+  align-items: center;
+}
+.month-picker__year-row button:hover:not(:disabled) { background: #f3f4f6; }
+.month-picker__year-row button:disabled { opacity: 0.3; cursor: default; }
+
+.month-picker__year-label {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #111827;
+}
+
+.month-picker__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+}
+
+.month-picker__cell {
+  padding: 0.4rem 0;
+  border: none;
+  border-radius: 7px;
+  background: none;
+  font-size: 0.82rem;
+  color: #374151;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.12s, color 0.12s;
+}
+.month-picker__cell:hover:not(:disabled) { background: #eff6ff; color: #1C88C7; }
+
+.month-picker__cell--selected {
+  background: #1C88C7!important;
+  color: #fff!important;
+  font-weight: 700;
+}
+
+.month-picker__cell--disabled {
+  opacity: 0.3;
+  cursor: default;
+}

@@ -1,244 +1,235 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import '../sass/Transactions.scss';
 import { getTransactions, addTransaction, deleteTransaction } from '../config/api';
 
 import TransMetric from '../components/Transactions/TransMetric';
-import DatePickerTrigger from '../components/Transactions/DatePickerTrigger';
 import { Search } from 'lucide-react';
 import SelectTrigger from '../components/Transactions/SelectTrigger';
 import TransactionTable from '../components/Transactions/TransactionTable';
 import TransactionModal from '../components/Transactions/TransactionModal';
+import MonthPicker from '../components/Common/MonthPicker';
 
 const Transactions = () => {
+  const now = new Date();
 
-    const [activeModal, setActiveModal] = useState(null);
-    const [currentDate, setCurrentDate] = useState('Mar 2026');
-    const [isOpen, setIsOpen] = useState(false);
+  const [activeModal, setActiveModal]           = useState(null);
+  const [transactions, setTransactions]         = useState([]);
+  const [search, setSearch]                     = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All Categories');
+  const [selectedType, setSelectedType]         = useState('All Types');
+  const [selectedMonth, setSelectedMonth]       = useState(null); // { year, month } | null
+  const [currentPage, setCurrentPage]           = useState(1);
+  const perPage = 5;
 
-    const [selectedMonth, setSelectedMonth] = useState("");
-    const toggleDatePicker = () => {
-        setIsOpen(!isOpen);
-        console.log("Open calendar picker UI here");
-    };
+  // ── Fetch ─────────────────────────────────────────────────────────────
+  const fetchTransactions = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res   = await getTransactions(token);
+      if (res?.data) {
+        setTransactions(
+          res.data.map(t => ({
+            ...t,
+            // Normalise type to Title case for display
+            type:   t.type === 'income' ? 'Income' : 'Expense',
+            amount: Number(t.amount),
+          }))
+        );
+      }
+    } catch (err) {
+      console.error('FETCH ERROR:', err);
+    }
+  };
 
-    const [transactions, setTransactions] = useState([]);
+  useEffect(() => { fetchTransactions(); }, []);
 
-    const [search, setSearch] = useState("");
-    const [selectedCategory, setSelectedCategory] = useState("All Categories");
-    const [selectedType, setSelectedType] = useState("All Types");
+  // ── Save / Delete ─────────────────────────────────────────────────────
+  const handleSave = async (data) => {
+    try {
+      const token = localStorage.getItem('token');
+      await addTransaction(
+        { ...data, type: data.type === 'income' ? 'income' : 'expense' },
+        token
+      );
+      await fetchTransactions();
+    } catch (err) {
+      console.error('SAVE ERROR:', err);
+    }
+  };
 
-    // ✅ FETCH DATA
-    const fetchTransactions = async () => {
-        try {
-            const token = localStorage.getItem("token");
-            const res = await getTransactions(token);
+  const handleDelete = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this transaction?')) return;
+    try {
+      const token = localStorage.getItem('token');
+      await deleteTransaction(id, token);
+      await fetchTransactions();
+    } catch (err) {
+      console.error('DELETE ERROR:', err);
+    }
+  };
 
-            if (res?.data) {
-                const normalized = res.data.map(t => ({
-                    ...t,
-                    type: t.type === "income" ? "Income" : "Expense",
-                    amount: Number(t.amount)
-                }));
-                setTransactions(normalized);
-            }
-        } catch (err) {
-            console.error("FETCH ERROR:", err);
-        }
-    };
+  // ── Filter ────────────────────────────────────────────────────────────
+  const filteredTransactions = useMemo(() => transactions.filter(t => {
+    const matchSearch =
+      t.description?.toLowerCase().includes(search.toLowerCase()) ||
+      t.category?.toLowerCase().includes(search.toLowerCase());
 
-    useEffect(() => {
-        fetchTransactions();
-    }, []);
+    const matchCategory =
+      selectedCategory === 'All Categories' || t.category === selectedCategory;
 
-    // ✅ SAVE DATA
-    const handleSave = async (data) => {
-        try {
-            const token = localStorage.getItem("token");
+    const matchType =
+      selectedType === 'All Types' || t.type === selectedType;
 
-            await addTransaction({
-                ...data,
-                type: data.type === "income" ? "income" : "expense"
-            }, token);
-
-            await fetchTransactions(); // 🔥 REFRESH UI
-
-        } catch (error) {
-            console.error("SAVE ERROR:", error);
-        }
-    };
-    // ✅ DELETE DATA
-    const handleDelete = async (id) => {
-        if (!window.confirm("Are you sure you want to delete this transaction?")) return;
-        try {
-            const token = localStorage.getItem("token");
-            await deleteTransaction(id, token);
-            await fetchTransactions(); // 🔥 REFRESH UI
-        } catch (error) {
-            console.error("DELETE ERROR:", error);
-        }
-    };
-
-    // ✅ FILTER
-    const filteredTransactions = transactions.filter(t => {
-
-        const matchSearch =
-            t.description?.toLowerCase().includes(search.toLowerCase()) ||
-            t.category?.toLowerCase().includes(search.toLowerCase());
-
-        const matchCategory =
-            selectedCategory === "All Categories" || t.category === selectedCategory;
-
-        const matchType =
-            selectedType === "All Types" || t.type === selectedType;
-
-        // ✅ MONTH FILTER
-        const matchMonth =
-            !selectedMonth ||
-            new Date(t.date).getMonth() === new Date(selectedMonth).getMonth() &&
-            new Date(t.date).getFullYear() === new Date(selectedMonth).getFullYear();
-
-        return matchSearch && matchCategory && matchType && matchMonth;
-    });
-
-    // ✅ METRICS
-    const totalIncome = filteredTransactions
-        .filter(t => t.type === "Income")
-        .reduce((acc, curr) => acc + curr.amount, 0);
-
-    const totalExpense = filteredTransactions
-        .filter(t => t.type === "Expense")
-        .reduce((acc, curr) => acc + curr.amount, 0);
-
-    const netBalance = totalIncome - totalExpense;
-
-    // ✅ STEP 1: DEFINE FUNCTION FIRST
-    const getMonthlyStats = (type) => {
-        const now = new Date();
-
-        const currentMonth = now.getMonth();
-        const currentYear = now.getFullYear();
-
-        const prevMonth = currentMonth === 0 ? 11 : currentMonth - 1;
-        const prevYear = currentMonth === 0 ? currentYear - 1 : currentYear;
-
-        const currentTotal = transactions
-            .filter(t =>
-                t.type === type &&
-                new Date(t.date).getMonth() === currentMonth &&
-                new Date(t.date).getFullYear() === currentYear
-            )
-            .reduce((acc, t) => acc + t.amount, 0);
-
-        const prevTotal = transactions
-            .filter(t =>
-                t.type === type &&
-                new Date(t.date).getMonth() === prevMonth &&
-                new Date(t.date).getFullYear() === prevYear
-            )
-            .reduce((acc, t) => acc + t.amount, 0);
-
-        let percentage = 0;
-
-        if (prevTotal > 0) {
-            percentage = ((currentTotal - prevTotal) / prevTotal) * 100;
-        }
-
-        return {
-            percentage: percentage.toFixed(1),
-            isPositive: percentage >= 0
-        };
-    };
-
-
-    // ✅ STEP 2: THEN USE IT
-    const incomeStats = getMonthlyStats("Income");
-    const expenseStats = getMonthlyStats("Expense");
-    const [currentPage, setCurrentPage] = useState(1);
-    const perPage = 5;
-
-    const indexOfLast = currentPage * perPage;
-    const indexOfFirst = indexOfLast - perPage;
-
-    const currentData = filteredTransactions.slice(indexOfFirst, indexOfLast);
-    return (
-        <div className="transactions-page">
-
-            {activeModal && (
-                <TransactionModal
-                    type={activeModal}
-                    onClose={() => setActiveModal(null)}
-                    onSave={handleSave}
-                />
-            )}
-
-            {/* HEADER */}
-            <div className="welcome-section">
-                <div className="welcome-text">
-                    <h1>Transactions</h1>
-                    <p>View and Manage all your income and Expense Record</p>
-                </div>
-                <div className="welcome-actions">
-                    <button className="btn-secondary" onClick={() => setActiveModal('income')}>Record Income</button>
-                    <button className="btn-blue" onClick={() => setActiveModal('expense')}>Record Expense</button>
-                </div>
-            </div>
-
-
-            {/* METRICS */}
-            <div className="transmetrics-grid">
-
-
-                <TransMetric
-                    title="Total Income"
-                    amount={`₹ ${totalIncome.toLocaleString('en-IN')}`}
-                    percentage={incomeStats.percentage}
-                    period="vs last month"
-                    type={incomeStats.isPositive ? "positive" : "negative"}
-                />
-
-                <TransMetric
-                    title="Total Expense"
-                    amount={`₹ ${totalExpense.toLocaleString('en-IN')}`}
-                    percentage={expenseStats.percentage}
-                    period="vs last month"
-                    type={expenseStats.isPositive ? "negative" : "positive"}
-                />
-                <TransMetric title="Net Balance" amount={`₹ ${netBalance.toLocaleString('en-IN')}`} type="success" />
-                <TransMetric title="Total Transactions" amount={filteredTransactions.length} type="plain" />
-            </div>
-
-            {/* FILTER */}
-            <div className="top-header">
-                <div style={{ flex: 1 }}></div>
-
-                <div className="header-actions">
-
-                    <SelectTrigger
-                        label={selectedCategory}
-                        options={["All Categories", "Food", "Travel", "Shopping", "Bills"]}
-                        onSelect={setSelectedCategory}
-                    />
-
-                    <SelectTrigger
-                        label={selectedType}
-                        options={["All Types", "Income", "Expense"]}
-                        onSelect={setSelectedType}
-                        variant="grey"
-                    />
-                </div>
-            </div>
-
-            {/* TABLE */}
-            <TransactionTable
-                data={currentData}
-                currentPage={currentPage}
-                totalPages={Math.ceil(filteredTransactions.length / perPage)}
-                onPageChange={setCurrentPage}
-                onDelete={handleDelete}
-            />
-
-        </div>
+    const matchMonth = !selectedMonth || (
+      new Date(t.date).getMonth()    === selectedMonth.month &&
+      new Date(t.date).getFullYear() === selectedMonth.year
     );
+
+    return matchSearch && matchCategory && matchType && matchMonth;
+  }), [transactions, search, selectedCategory, selectedType, selectedMonth]);
+
+  // ── Metrics (fixed to current/selected month vs prev) ─────────────────
+  const { totalIncome, totalExpense, netBalance, incomeStats, expenseStats } = useMemo(() => {
+    const targetYear  = selectedMonth ? selectedMonth.year  : now.getFullYear();
+    const targetMonth = selectedMonth ? selectedMonth.month : now.getMonth();
+    const prevYear    = targetMonth === 0 ? targetYear - 1 : targetYear;
+    const prevMonth   = targetMonth === 0 ? 11 : targetMonth - 1;
+
+    const inCur  = transactions.filter(t => t.type === 'Income'  && new Date(t.date).getMonth() === targetMonth && new Date(t.date).getFullYear() === targetYear).reduce((a, t) => a + t.amount, 0);
+    const inPrev = transactions.filter(t => t.type === 'Income'  && new Date(t.date).getMonth() === prevMonth   && new Date(t.date).getFullYear() === prevYear).reduce((a, t) => a + t.amount, 0);
+    const exCur  = transactions.filter(t => t.type === 'Expense' && new Date(t.date).getMonth() === targetMonth && new Date(t.date).getFullYear() === targetYear).reduce((a, t) => a + t.amount, 0);
+    const exPrev = transactions.filter(t => t.type === 'Expense' && new Date(t.date).getMonth() === prevMonth   && new Date(t.date).getFullYear() === prevYear).reduce((a, t) => a + t.amount, 0);
+
+    const calcPct = (cur, prev) => {
+      if (prev === 0 && cur === 0) return { percentage: null, isPositive: true };
+      const pct = prev === 0 ? 100 : ((cur - prev) / Math.abs(prev)) * 100;
+      return { percentage: Math.abs(pct).toFixed(1), isPositive: pct >= 0 };
+    };
+
+    return {
+      totalIncome: inCur,
+      totalExpense: exCur,
+      netBalance: inCur - exCur,
+      incomeStats:  calcPct(inCur, inPrev),
+      expenseStats: calcPct(exCur, exPrev),
+    };
+  }, [transactions, selectedMonth]);
+
+  // ── Pagination ────────────────────────────────────────────────────────
+  const totalPages  = Math.ceil(filteredTransactions.length / perPage);
+  const currentData = filteredTransactions.slice((currentPage - 1) * perPage, currentPage * perPage);
+
+  const MONTHS      = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const activeLabel = selectedMonth
+    ? `${MONTHS[selectedMonth.month]} ${selectedMonth.year}`
+    : 'All Months';
+
+  // Build unique categories from actual data for the dropdown
+  const categoryOptions = useMemo(() => {
+    const cats = [...new Set(transactions.map(t => t.category).filter(Boolean))].sort();
+    return ['All Categories', ...cats];
+  }, [transactions]);
+
+  return (
+    <div className="transactions-page">
+      {activeModal && (
+        <TransactionModal
+          type={activeModal}
+          onClose={() => setActiveModal(null)}
+          onSave={handleSave}
+        />
+      )}
+
+      {/* HEADER */}
+      <div className="welcome-section">
+        <div className="welcome-text">
+          <h1>Transactions</h1>
+          <p>View and manage all your income and expense records</p>
+        </div>
+        <div className="welcome-actions">
+          <button className="btn-secondary" onClick={() => setActiveModal('income')}>+ Record Income</button>
+          <button className="btn-blue"      onClick={() => setActiveModal('expense')}>+ Record Expense</button>
+        </div>
+      </div>
+
+      {/* METRICS — values update based on active filters */}
+      <div className="transmetrics-grid">
+        <TransMetric
+          title="Total Income"
+          amount={`₹ ${totalIncome.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`}
+          percentage={incomeStats.percentage}
+          period="vs prev month"
+          type={incomeStats.percentage === null ? 'plain' : (incomeStats.isPositive ? 'positive' : 'negative')}
+        />
+        <TransMetric
+          title="Total Expense"
+          amount={`₹ ${totalExpense.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`}
+          percentage={expenseStats.percentage}
+          period="vs prev month"
+          // For expenses: going up is negative (bad), going down is positive (good)
+          type={expenseStats.percentage === null ? 'plain' : (expenseStats.isPositive ? 'negative' : 'positive')}
+        />
+        <TransMetric
+          title="Net Balance"
+          amount={`₹ ${netBalance.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`}
+          type={netBalance >= 0 ? 'success' : 'negative'}
+        />
+        <TransMetric
+          title="Total Transactions"
+          amount={filteredTransactions.length}
+          type="plain"
+        />
+      </div>
+
+      {/* FILTER BAR */}
+      <div className="top-header">
+        <div className="search-bar">
+          <Search size={16} className="search-icon" />
+          <input
+            placeholder="Search by name or category…"
+            value={search}
+            onChange={e => { setSearch(e.target.value); setCurrentPage(1); }}
+          />
+        </div>
+
+        <div className="header-actions">
+          <MonthPicker
+            value={selectedMonth}
+            onChange={v => { setSelectedMonth(v); setCurrentPage(1); }}
+            placeholder="All Months"
+          />
+          <SelectTrigger
+            label={selectedCategory}
+            options={categoryOptions}
+            onSelect={v => { setSelectedCategory(v); setCurrentPage(1); }}
+          />
+          <SelectTrigger
+            label={selectedType}
+            options={['All Types', 'Income', 'Expense']}
+            onSelect={v => { setSelectedType(v); setCurrentPage(1); }}
+            variant="grey"
+          />
+        </div>
+      </div>
+
+      {/* Active filter badge */}
+      {selectedMonth && (
+        <div className="active-filter-badge">
+          Showing transactions for <strong>{activeLabel}</strong>
+          <button onClick={() => { setSelectedMonth(null); setCurrentPage(1); }}>Clear ×</button>
+        </div>
+      )}
+
+      {/* TABLE */}
+      <TransactionTable
+        data={currentData}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+        onDelete={handleDelete}
+      />
+    </div>
+  );
 };
 
 export default Transactions;

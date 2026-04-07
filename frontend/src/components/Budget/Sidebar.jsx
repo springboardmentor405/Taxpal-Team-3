@@ -44,7 +44,7 @@ const Sidebar = () => {
           <Link to="/settings" className="footer-link">
             <Settings size={18} /> <span>Settings</span>
           </Link>
-          <Link to="/login" className="footer-link">
+          <Link to="/login" className="footer-link" style={{ marginLeft: '10px' }}>
             <LogOut size={18} /> <span>Log out</span>
           </Link>
         </div>

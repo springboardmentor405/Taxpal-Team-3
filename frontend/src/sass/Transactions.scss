@@ -94,3 +94,26 @@
     
 }
 }
+.active-filter-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 20px;
+  padding: 0.3rem 0.85rem;
+  font-size: 0.8rem;
+  color: #1e40af;
+
+  strong { font-weight: 700; }
+
+  button {
+    background: none;
+    border: none;
+    color: #6b7280;
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 0;
+    &:hover { color: #ef4444; }
+  }
+}

@@ -1,4 +1,7 @@
 const BudgetCards = ({ totalBudget, totalSpent, remaining, health }) => {
+  const pctSpentValue = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
+  const pctRemValue   = totalBudget > 0 ? (Math.max(remaining, 0) / totalBudget) * 100 : 0;
+
   const cards = [
     {
       label: "Total Budget",
@@ -14,20 +17,20 @@ const BudgetCards = ({ totalBudget, totalSpent, remaining, health }) => {
       label: "Total Spend",
       icon: "💳",
       value: `₹${totalSpent.toLocaleString('en-IN')}`,
-      progress: Math.min((totalSpent / totalBudget) * 100, 100),
+      progress: Math.min(pctSpentValue, 100),
       progressColor: "#6ebb9c",
       sub1: "Progress",
-      sub1val: `${Math.round((totalSpent / totalBudget) * 100)}%`,
+      sub1val: `${Math.round(pctSpentValue)}%`,
       sub2: `₹${totalSpent.toLocaleString('en-IN')} Spent`,
     },
     {
       label: "Remaining Budget",
       icon: "📊",
       value: `₹${Math.max(remaining, 0).toLocaleString('en-IN')}`,
-      progress: Math.max((remaining / totalBudget) * 100, 0),
+      progress: pctRemValue,
       progressColor: "#65ede0",
       sub1: "Progress",
-      sub1val: `${Math.round(Math.max((remaining / totalBudget) * 100, 0))}%`,
+      sub1val: `${Math.round(pctRemValue)}%`,
       sub2: `₹${Math.max(remaining, 0).toLocaleString('en-IN')} Left`,
     },
   ];
